@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://isaacctrlios.emp0ry.com/sitemap.xml

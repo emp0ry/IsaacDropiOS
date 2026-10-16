@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#120b24">
+  <meta name="description" content="Invisible Drop (Ctrl) control for native iOS Repentance. Tap to switch D Infinity; hold to drop trinkets, cards, runes and pills. Rootless, LiveContainer and embedded builds.">
+  <meta name="author" content="emp0ry">
+  <meta name="robots" content="index, follow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com; upgrade-insecure-requests;">
+  <title>Isaac Drop (Ctrl) | Touch Controls for iOS Repentance</title>
+  <link rel="canonical" href="https://isaacctrlios.emp0ry.com/">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Isaac Drop (Ctrl)">
+  <meta property="og:title" content="Tap to switch. Hold to drop.">
+  <meta property="og:description" content="An invisible bottom-left Drop control for native iOS Repentance. Independent of EID and Steam Sync, with rootless, LiveContainer and embedded builds.">
+  <meta property="og:url" content="https://isaacctrlios.emp0ry.com/">
+  <meta name="twitter:card" content="summary">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="#top" aria-label="Isaac Drop home"><span class="brand-key" aria-hidden="true">Ctrl</span>Isaac Drop</a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav" hidden><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <a href="#controls">Controls</a>
+        <a href="#downloads">Download</a>
+        <a href="#install">Install</a>
+        <a href="#requirements">Compatibility</a>
+        <a class="button button-ghost" href="https://github.com/emp0ry/IsaacDropiOS" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="button button-accent" href="https://emp0ry.com" target="_blank" rel="noopener noreferrer">Hub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="hero section" id="top">
+      <div class="container hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Repentance on iOS · Native input · Invisible control</div>
+        <h1>Tap to switch.<br><span>Hold to drop.</span></h1>
+        <p class="hero-text">A small touch control for the things Isaac’s iOS controls leave out. Switch D Infinity and drop your pocket items from an invisible zone in the bottom-left corner. Nothing extra on your screen.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#downloads">Download Latest <span aria-hidden="true">↓</span></a>
+          <a class="button button-secondary" href="#controls">Find the control</a>
+          <a class="text-link" href="https://github.com/emp0ry/IsaacDropiOS" target="_blank" rel="noopener noreferrer">View source ↗</a>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric"><strong>Zero visible buttons</strong><span>No icon, label, border or floating window</span></div>
+          <div class="metric"><strong>No trinket required</strong><span>Hold to drop a card, rune or pill</span></div>
+          <div class="metric"><strong>One independent mod</strong><span>Use it with or without EID and Steam Sync</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section controls-section" id="controls">
+      <div class="container">
+        <div class="section-head"><span class="section-kicker">Where to touch</span><h2>Bottom-left. Right at the edge.</h2><p>The active area is 72 × 64 screen points. It is invisible in Isaac and available only during an unpaused run.</p></div>
+        <div class="control-guide">
+          <div class="screen-guide" role="img" aria-label="Landscape screen diagram: the invisible Drop touch zone is at the very bottom-left corner, not the edge of the game room.">
+            <div class="guide-top"><span>LANDSCAPE SCREEN</span><span class="guide-pause" aria-hidden="true">Ⅱ</span></div>
+            <div class="guide-room"><span class="room-label">Your run stays clear.</span><span class="guide-pedestal" aria-hidden="true"></span></div>
+            <div class="guide-zone"><span>72 × 64 pt</span><strong>Touch here</strong></div>
+            <div class="guide-home" aria-hidden="true"></div>
+            <div class="guide-note">Highlighted here only<br>Invisible in the game</div>
+          </div>
+          <p class="figure-note">Control-location diagram, not a gameplay screenshot. Screen points are logical touch coordinates, not image pixels.</p>
+        </div>
+        <div class="gesture-grid">
+          <article class="gesture"><span class="gesture-number">01 / TAP</span><h3>Switch D Infinity</h3><p>One new press advances one die. It does not use the active item or spend charge. Holding does not repeatedly cycle.</p><div class="dice-demo"><span class="demo-label">Try the sequence</span><output id="die-mode" aria-live="polite">D1</output><button class="button button-secondary" id="cycle-demo" type="button" hidden>Next die →</button></div><p class="small-copy">Website illustration only; this does not control the game.</p></article>
+          <article class="gesture"><span class="gesture-number">02 / HOLD</span><h3>Drop what you’re carrying</h3><p>Keep your finger in the zone for the game’s normal drop threshold, about three seconds. Eligible trinkets and pocket items follow Isaac’s own drop rules.</p><div class="pocket-types"><span>Cards</span><span>Runes</span><span>Pills</span><span>Trinkets</span></div><p class="small-copy">No equipped trinket is needed to drop a pocket item.</p></article>
+        </div>
+        <aside class="notice"><strong>A Drop control, not a full keyboard.</strong><p>D Infinity cycling is supported. Other short-press Ctrl behaviors are not yet fully supported by the iOS touch path. Sliding out, pausing or backgrounding cancels the held input.</p></aside>
+      </div>
+    </section>
+
+    <section class="section downloads" id="downloads">
+      <div class="container">
+        <div class="section-head"><span class="section-kicker">Downloads</span><h2>Choose your installation.</h2><p>The same native ARM64 code, packaged for your setup. Use only one loading method per Isaac installation.</p></div>
+        <p class="download-status" data-release-status role="status">Isaac Drop v0.1.1 · Release files on GitHub</p>
+        <div class="download-grid">
+          <article class="download-card"><div class="download-card-head"><span>ROOTLESS</span><span>DEB</span></div><h3>Jailbroken devices</h3><p>ElleKit injection package for the installed native game. No extra mod is required.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-rootless.deb" data-asset="IsaacDrop-rootless.deb">Download DEB ↓</a></article>
+          <article class="download-card"><div class="download-card-head"><span>LIVECONTAINER</span><span>ZIP</span></div><h3>App-specific framework</h3><p>Import the framework archive into Isaac’s own tweak folder, not the shared global folder.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-LiveContainer.framework.zip" data-asset="IsaacDrop-LiveContainer.framework.zip">Download framework ↓</a></article>
+          <article class="download-card"><div class="download-card-head"><span>EMBEDDED</span><span>ZIP</span></div><h3>App-bundle package</h3><p>The standalone dylib with setup notes. Embed it into the app and sign the complete bundle.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-Embedded.zip" data-asset="IsaacDrop-Embedded.zip">Download package ↓</a></article>
+        </div>
+        <div class="download-extras"><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop.dylib" data-asset="IsaacDrop.dylib">Standalone dylib</a><span aria-hidden="true">·</span><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/SHA256SUMS" data-asset="SHA256SUMS">SHA-256 checksums</a><span aria-hidden="true">·</span><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest" data-release-link>Release notes</a></div>
+      </div>
+    </section>
+
+    <section class="section" id="install">
+      <div class="container">
+        <div class="section-head"><span class="section-kicker">Getting started</span><h2>Install once. Restart Isaac.</h2><p>No description database, Steam account or configuration panel is needed.</p></div>
+        <div class="install-grid">
+          <article class="install-card"><span class="install-number">A</span><h3>Rootless jailbreak</h3><ol><li>Download <code>IsaacDrop-rootless.deb</code>.</li><li>Install it with your package manager. ElleKit is the loader.</li><li>Fully restart Isaac, enter a run, and use the bottom-left zone.</li></ol></article>
+          <article class="install-card"><span class="install-number">B</span><h3>LiveContainer</h3><ol><li>Download the <code>LiveContainer.framework.zip</code> archive.</li><li>Import it into Isaac’s app-specific tweaks using LiveContainer’s tweak controls.</li><li>Fully restart the guest app. Do not load a second copy through another method.</li></ol></article>
+          <article class="install-card"><span class="install-number">C</span><h3>Direct embedding</h3><ol><li>Place <code>IsaacDrop.dylib</code> in the app’s <code>Frameworks</code> directory.</li><li>Add a load command for <code>@executable_path/Frameworks/IsaacDrop.dylib</code>.</li><li>Sign the dylib and complete app bundle, then install it using your existing signing setup.</li></ol></article>
+        </div>
+        <p class="section-footnote">The project distributes only its own code and packages. No Isaac IPA, extracted game assets or purchase bypass is included.</p>
+      </div>
+    </section>
+
+    <section class="section requirements" id="requirements">
+      <div class="container requirements-grid">
+        <div><span class="section-kicker">Compatibility</span><h2>Native game.<br>Version-specific adapter.</h2><p>This is a small native mod, not a Windows Lua-mod loader. A matching game executable is required; unknown builds are left untouched.</p><a class="text-link" href="https://github.com/emp0ry/IsaacDropiOS/blob/main/docs/TESTING.md" target="_blank" rel="noopener noreferrer">Gameplay test checklist ↗</a></div>
+        <dl class="spec-list"><div><dt>Game</dt><dd>The Binding of Isaac: Repentance, native iOS</dd></div><div><dt>Target</dt><dd>iOS game 1.4 · Repentance 1.7.9b.J754</dd></div><div><dt>Architecture</dt><dd>ARM64 · iOS 15 or later</dd></div><div><dt>Loading</dt><dd>Rootless ElleKit, LiveContainer or signed embedding</dd></div><div><dt>Dependencies</dt><dd>Apple system libraries only; no JIT or writable executable memory</dd></div><div><dt>Other mods</dt><dd>Independent of EID, Steam Sync and Debug Console</dd></div></dl>
+      </div>
+    </section>
+
+    <section class="section faq" id="faq">
+      <div class="container narrow">
+        <div class="section-head"><span class="section-kicker">Good to know</span><h2>Small control. Clear limits.</h2></div>
+        <details><summary>I cannot see the button. Is that normal?</summary><p>Yes. There is no visible button. During an unpaused run, touch the bottom-left 72 × 64 screen points at the actual screen edge. The zone is disabled in menus and while paused.</p></details>
+        <details><summary>Does it work without a jailbreak?</summary><p>The dylib has no jailbreak dependencies. LiveContainer and direct embedding are supported loading formats; a directly embedded dylib must be code-signed with the app. This is not an App Store app and does not change Apple’s signing requirements.</p></details>
+        <details><summary>Will it delete my card or use the die?</summary><p>Holding supplies the game’s native Drop input; the game handles eligible drops. D Infinity tapping changes its selected mode and refreshes the native HUD, without activating the item. The mod does not edit save files directly.</p></details>
+        <details><summary>Does it replace every Ctrl action?</summary><p>No. This release supports D Infinity cycling and native hold-to-drop. Other short-press Ctrl behaviors still need their own iOS compatibility work.</p></details>
+        <details><summary>Something does not work on my device.</summary><p>First fully restart Isaac and check that only one copy is loaded. Include your game version, loading method and exact steps in a <a href="https://github.com/emp0ry/IsaacDropiOS/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a>. The diagnostic log is at <code>Library/Application Support/IsaacDrop/drop.log</code> inside Isaac’s own container.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div><a class="brand" href="#top">Isaac Drop <span class="footer-version" data-version>v0.1.1</span></a><p>Independent, unofficial mod by emp0ry. Not affiliated with Nicalis.</p><small>© <span data-year>2026</span> emp0ry · MIT license</small></div><nav aria-label="Related projects"><a href="https://isaaceidios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac EID ↗</a><a href="https://isaacsteamios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac Steam Sync ↗</a><a href="https://github.com/emp0ry/IsaacDropiOS" target="_blank" rel="noopener noreferrer">Source & issues ↗</a></nav></div></footer>
+</body>
+</html>
