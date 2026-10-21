@@ -59,6 +59,14 @@ The initial native restart was confirmed in PlayCover. The repeating-hold
 update has host tests and still needs gameplay confirmation. It does not replace
 or disable the bottom-left Drop control or the other installed mods.
 
+### Pause (Esc)
+
+Press **Esc** to open the native pause menu; press it again to resume. Holding
+Esc toggles only once. This supports UIKit hardware keyboards and PlayCover.
+It cancels any held-R loop and leaves text entry, dialogs, menus and modifier
+shortcuts alone. It uses the game's pause animations and audio-resume path,
+not a raw write to the pause-state field. Escape gameplay verification is pending.
+
 ## Installation
 
 - **Rootless jailbreak:** install `packages/IsaacDrop-rootless.deb` with ElleKit.
@@ -87,7 +95,7 @@ copy of its complete method table and RTTI. Only that validated writable input
 object's table pointer changes. Protected original tables remain untouched.
 No page-protection changes, instruction patching, native
 item removal, active-item invocation, save editing, or injected UITouch is used.
-Except for an accepted R shortcut, physical input and other actions pass through
+Except for accepted R/Esc shortcuts, physical input and other actions pass through
 unchanged. A foreign hook in these exact slots is rejected rather than overwritten. The mod disables
 itself if table, object, or executable validation fails.
 

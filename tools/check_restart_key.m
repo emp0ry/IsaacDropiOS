@@ -69,11 +69,14 @@ static void MacEvent(NSInteger code, NSInteger type, BOOL repeat, NSUInteger fla
 int main(int argc, char **argv) {
     (void)argv;
     @autoreleasepool {
-        __block int downs = 0, ups = 0;
+        __block int downs = 0, ups = 0, pauses = 0;
         __block BOOL allowed = YES;
         ISDRestartKey *restart = [[ISDRestartKey alloc] initWithHandler:^BOOL(BOOL down) {
             if (!down) { ups++; return YES; }
             if (!allowed) return NO; downs++; return YES;
+        } escapeHandler:^BOOL {
+            if (!allowed) return NO;
+            pauses++; return YES;
         }];
         if (argc > 1) { [restart start]; InstallOtherShortcut(); }
         else { InstallOtherShortcut(); [restart start]; }
@@ -99,6 +102,16 @@ int main(int argc, char **argv) {
         MacEvent(15,10,YES,0); MacEvent(15,10,YES,0); assert(downs == 3);
         MacEvent(15,11,NO,0);
         MacEvent(50,10,NO,0); MacEvent(50,11,NO,0); assert(OtherShortcut == 2);
+        UIKitEvent(0x29,UIPressPhaseBegan,0); UIKitEvent(0x29,UIPressPhaseBegan,0);
+        assert(pauses == 1);
+        UIKitEvent(0x29,UIPressPhaseEnded,0);
+        MacEvent(53,10,NO,0); MacEvent(53,10,YES,0); assert(pauses == 2);
+        MacEvent(53,11,NO,0);
+        allowed = NO; MacEvent(53,10,NO,0); allowed = YES;
+        MacEvent(53,10,YES,0); assert(pauses == 2);
+        MacEvent(53,11,NO,0);
+        MacEvent(53,10,NO,1UL<<20); MacEvent(53,10,YES,0); assert(pauses == 2);
+        MacEvent(53,11,NO,0);
         UIKitEvent(4,UIPressPhaseBegan,0); [app sendEvent:[UIEvent new]];
         assert(app.forwarded >= 6);
         puts("Restart keyboard checks passed: UIKit, PlayCover, hook chaining, repeats, focus, modifiers, ignored holds");

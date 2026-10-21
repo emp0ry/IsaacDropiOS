@@ -47,7 +47,11 @@ Use a disposable run: these checks intentionally replace the current run.
 6. Check the native Eden-token restriction and unsupported-game fail-closed
    behavior. Repeating must never bypass native restart restrictions.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacDrop 0.1.2 ready`,
+Press Esc in an active run to pause, hold it to confirm it does not toggle again,
+then release and press once to resume. Check the native pause animation, music,
+R-loop cancellation, and typing in Console/Steam fields without changing pause.
+
+Log checkpoints: `native Drop instance adapter installed`, `IsaacDrop 0.1.3 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
 `native fresh-run restart code validation passed`, and
 `native fresh-run restart queued; 1-second repeat while held`. With D Infinity

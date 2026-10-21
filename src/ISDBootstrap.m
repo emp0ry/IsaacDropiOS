@@ -105,7 +105,7 @@ static BOOL EditingText(UIView *view) {
     // reorder them: settings/console dialogs must keep their established input.
     if (!self.loggedStartup) {
         self.loggedStartup = YES;
-        ISDLog(@"IsaacDrop 0.1.2 ready; bottom-left Drop, top-center Restart, physical R; 1-second repeat");
+        ISDLog(@"IsaacDrop 0.1.3 ready; Drop, repeating Restart, Escape pause/resume");
     }
 }
 - (void)suspend { self.zone.hidden = YES; self.restartZone.hidden = YES; [self.input cancel]; }
@@ -117,6 +117,12 @@ static BOOL EditingText(UIView *view) {
         if (!target || !target.restartZone || target.restartZone.hidden ||
             EditingText(target.restartZone.window)) return NO;
         return [target.input restartDown:2];
+    } escapeHandler:^BOOL {
+        ISDController *target = weakSelf;
+        UIWindow *window = target.zone.window;
+        if (!target || !window || window.hidden || window.rootViewController.presentedViewController ||
+            EditingText(window)) return NO;
+        return [target.input togglePause];
     }];
     [self.restartKey start];
     self.timer = [NSTimer timerWithTimeInterval:.05 target:self selector:@selector(tick) userInfo:nil repeats:YES];

@@ -64,10 +64,21 @@ class SourceTests(unittest.TestCase):
 
     def test_packages(self):
         info = plistlib.loads((ROOT / "livecontainer/Info.plist").read_bytes())
-        self.assertEqual(info["CFBundleShortVersionString"], "0.1.2")
+        self.assertEqual(info["CFBundleShortVersionString"], "0.1.3")
         self.assertEqual(info["CFBundleExecutable"], "IsaacDrop")
         filt = plistlib.loads((ROOT / "package/IsaacDrop.plist").read_bytes())
         self.assertEqual(filt["Filter"]["Bundles"], ["com.Nicalis.Isaac-iOS"])
+
+    def test_escape_native_menu(self):
+        native = (ROOT / "src/ISDNativeInput.mm").read_text()
+        keys = (ROOT / "src/ISDRestartKey.m").read_text()
+        self.assertIn("PauseCodeMatches", native)
+        self.assertIn("PauseEnterOffset = 0x8a1d38", native)
+        self.assertIn("PauseLeaveOffset = 0x8a1f08", native)
+        self.assertIn("ResumeManagerOffset = 0x670ca8", native)
+        self.assertIn("liveRunAvailableAllowPause:YES", native)
+        self.assertIn("UIKeyboardHIDUsageKeyboardEscape", keys)
+        self.assertIn("escapeHeld", keys)
 
 if __name__ == "__main__":
     unittest.main()

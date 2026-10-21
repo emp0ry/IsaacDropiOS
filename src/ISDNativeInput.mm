@@ -29,6 +29,9 @@ constexpr uintptr_t QueueRestartOffset = 0x672568;
 constexpr uintptr_t SeedsCopyOffset = 0x56fc54;
 constexpr uintptr_t SeedsDestroyOffset = 0x56fcd4;
 constexpr uintptr_t CounterAddOffset = 0x701e28;
+constexpr uintptr_t PauseEnterOffset = 0x8a1d38;
+constexpr uintptr_t PauseLeaveOffset = 0x8a1f08;
+constexpr uintptr_t ResumeManagerOffset = 0x670ca8;
 using BoolQuery = bool (*)(void *,int);
 using ValueQuery = float (*)(void *,int);
 static BoolQuery OriginalPressed, OriginalTriggered;
@@ -91,6 +94,14 @@ static bool RestartCodeMatches(uintptr_t image) {
         MatchWords(image+CounterAddOffset,{0xa9ba6ffc,0xa90167fa,0xa9025ff8,0xa90357f6}) &&
         MatchWords(image+0x572488,{0xaa0103e8,0x52800001,0x35000088,0x39400008}) &&
         MatchWords(image+0x67155c,{0x2940db15,0x9147da68,0x912d4101,0x910023e0});
+}
+
+static bool PauseCodeMatches(uintptr_t image) {
+    return MatchWords(image+PauseEnterOffset,{0xd10143ff,0xa9015ff8,0xa90257f6,0xa9034ff4}) &&
+        MatchWords(image+PauseLeaveOffset,{0xa9be4ff4,0xa9017bfd,0x910043fd,0xb942b808}) &&
+        MatchWords(image+ResumeManagerOffset,{0xa9be4ff4,0xa9017bfd,0x910043fd,0xaa0003f3}) &&
+        MatchWords(image+0x8a179c,{0x97f74134,0x340001a0,0xaa1303e0,0x94000164}) &&
+        MatchWords(image+0x8a187c,{0xaa1303e0,0x940001a2,0xf9400320,0xa9457bfd});
 }
 
 static NSString *UUID(const mach_header_64 *header) {
@@ -315,6 +326,7 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
     BOOL _installed;
     BOOL _switchReady;
     BOOL _restartReady;
+    BOOL _pauseReady;
     IsaacDrop::RestartHold _restartHold;
     BOOL _searching, _searchReady;
     uintptr_t _candidate;
@@ -335,8 +347,10 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
         _playerTables = PlayerVTables(_segments);
         _switchReady = SwitchCodeMatches(reinterpret_cast<uintptr_t>(_header));
         _restartReady = RestartCodeMatches(reinterpret_cast<uintptr_t>(_header));
+        _pauseReady = PauseCodeMatches(reinterpret_cast<uintptr_t>(_header));
         ISDLog(@"D Infinity touch-switch code validation %@",_switchReady ? @"passed" : @"rejected");
         ISDLog(@"native fresh-run restart code validation %@",_restartReady ? @"passed" : @"rejected");
+        ISDLog(@"native pause/resume code validation %@",_pauseReady ? @"passed" : @"rejected");
     }
     return self;
 }
@@ -372,11 +386,14 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
     return NO;
 }
 - (BOOL)gameplayAvailable {
+    return [self liveRunAvailableAllowPause:NO];
+}
+- (BOOL)liveRunAvailableAllowPause:(BOOL)allowPaused {
     if (!_installed || !NSThread.isMainThread) return NO;
     uintptr_t game = 0, room = 0; int32_t pause = -1; uint32_t seed = 0;
     if (!Read(reinterpret_cast<uintptr_t>(_header)+GameGlobal,&game,8) || !game ||
         !Read(game+0x21550,&room,8) || !room || !Read(game+0x25d44,&seed,4) || !seed ||
-        !Read(game+0x10dfd8,&pause,4) || pause != 0) return NO;
+        !Read(game+0x10dfd8,&pause,4) || (pause != 0 && !(allowPaused && pause == 1))) return NO;
     if (_lastGame != game) { _lastGame = game; _playerOffset = SIZE_MAX; }
     if (_playerOffset != SIZE_MAX) return LivePlayerVector(game+_playerOffset,_playerTables);
     double now = CACurrentMediaTime();
@@ -496,6 +513,29 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
 - (void)restartUp:(unsigned)source { _restartHold.Up(source); }
 - (void)cancelRestart { _restartHold.Cancel(); }
 - (BOOL)restartTransitionPending { return _restartHold.TransitionPending(); }
+- (BOOL)togglePause {
+    if (!_pauseReady || ![self liveRunAvailableAllowPause:YES] ||
+        UIApplication.sharedApplication.applicationState != UIApplicationStateActive) return NO;
+    CADisplayLink *link = NativeLink;
+    if (!link || CACurrentMediaTime()-link.timestamp > .25) return NO;
+    uintptr_t image = reinterpret_cast<uintptr_t>(_header), game = 0, manager = 0;
+    uint32_t state = 0; int32_t pause = -1; uint8_t pending = 1; float fade = 1;
+    if (!Read(image+GameGlobal,&game,8) || !Read(image+ManagerGlobal,&manager,8) || !manager ||
+        !Read(manager+0x204c0,&state,4) || state != 2 ||
+        !Read(manager+0x1f6b40,&pending,1) || pending ||
+        !Read(game+0x1cf444,&fade,4) || !std::isfinite(fade) || fade != 0 ||
+        !Read(game+0x10dfd8,&pause,4) || (pause != 0 && pause != 1) ||
+        !Writable(game+0x10dd20,0x80d10) || !Writable(manager,0x27bcca)) return NO;
+    [self cancel];
+    using NativeMenuAction = void (*)(void *);
+    // Same pause-menu entry and animated exit as ACTION_PAUSE. Resume also
+    // restores the manager's audio state, exactly as the native input branch.
+    reinterpret_cast<NativeMenuAction>(image+(pause == 0 ? PauseEnterOffset : PauseLeaveOffset))(
+        reinterpret_cast<void *>(game+0x10dd20));
+    if (pause == 1) reinterpret_cast<NativeMenuAction>(image+ResumeManagerOffset)(reinterpret_cast<void *>(manager));
+    ISDLog(@"Escape requested native %@",pause == 0 ? @"pause" : @"resume");
+    return YES;
+}
 - (BOOL)restartContextAvailable {
     // Do not require a room, ready input or a completed fade here: those may
     // disappear during our own queued restart. Actual pause/menu state must

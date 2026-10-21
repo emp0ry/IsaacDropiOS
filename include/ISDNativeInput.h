@@ -18,5 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restartUp:(unsigned)source;
 - (void)pollRestart;
 - (void)cancelRestart;
+- (BOOL)togglePause;
 @end
 NS_ASSUME_NONNULL_END
