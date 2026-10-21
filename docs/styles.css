@@ -75,6 +75,7 @@ code { font-family: ui-monospace, SFMono-Regular, monospace; font-size: .88em; o
 .guide-zone { position: absolute; bottom: 0; left: 0; width: 15%; height: 25%; min-width: 90px; min-height: 64px; display: flex; justify-content: center; flex-direction: column; align-items: center; border-top: 1px dashed #c394ff; border-right: 1px dashed #c394ff; border-radius: 0 12px 0 0; background: #a66bff25; }
 .guide-zone span { font-size: .65rem; color: #bda5d6; }
 .guide-zone strong { font-size: clamp(.66rem, 1.5vw, .95rem); color: #e2c5ff; }
+.guide-zone.guide-restart { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); border: 1px dashed #c394ff; border-top: 0; border-radius: 0 0 12px 12px; }
 .guide-home { position: absolute; bottom: 12px; left: 41%; right: 41%; height: 4px; border-radius: 4px; background: #ffffff3b; }
 .guide-note { position: absolute; bottom: 26px; right: 30px; color: #9986ad; text-align: right; font-size: .68rem; line-height: 1.5; }
 .figure-note { font-size: .73rem; margin: 12px 0 0; text-align: center; }

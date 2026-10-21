@@ -1,6 +1,7 @@
 #import "ISDNativeInput.h"
 #import "ISDHost.h"
 #include "ISDDropPolicy.hpp"
+#include "ISDRestartPolicy.hpp"
 #import <UIKit/UIKit.h>
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
@@ -23,6 +24,11 @@ constexpr uintptr_t RefreshActiveHUDOffset = 0x6ebd10;
 constexpr uintptr_t SwapActiveSlotsOffset = 0x5390f8;
 constexpr uint32_t TouchControllerID = 0x0010dead;
 constexpr int DropAction = 11;
+constexpr uintptr_t ManagerGlobal = 0xac2428;
+constexpr uintptr_t QueueRestartOffset = 0x672568;
+constexpr uintptr_t SeedsCopyOffset = 0x56fc54;
+constexpr uintptr_t SeedsDestroyOffset = 0x56fcd4;
+constexpr uintptr_t CounterAddOffset = 0x701e28;
 using BoolQuery = bool (*)(void *,int);
 using ValueQuery = float (*)(void *,int);
 static BoolQuery OriginalPressed, OriginalTriggered;
@@ -70,6 +76,21 @@ static bool SwitchCodeMatches(uintptr_t image) {
         MatchWords(image+InputBlockedOffset,{0x39470808,0x340001a8,0xb9573808}) &&
         MatchWords(image+RefreshActiveHUDOffset,{0x91096008,0x52800109,0xd109610a,0xf940014a}) &&
         MatchWords(image+SwapActiveSlotsOffset,{0xd10103ff,0xa9024ff4,0xa9037bfd,0x9100c3fd});
+}
+
+static bool RestartCodeMatches(uintptr_t image) {
+    // Native Game update fade mode 5 is the controller-hold restart path.
+    // It copies Seeds, resets native counters, then queues a fresh run. Modes
+    // 1/2/3/4 and the R Key collectible have different semantics; do not use them.
+    return MatchWords(image+0x88ddb0,{0x91409688,0x91310100,0x52800001,0x97f131ee}) &&
+        MatchWords(image+0x88de30,{0xaa1503e0,0x52800002,0x52800023,0x97f791cb}) &&
+        MatchWords(image+QueueRestartOffset,{0xd10283ff,0xa90757f6,0xa9084ff4,0xa9097bfd}) &&
+        MatchWords(image+SeedsCopyOffset,{0x17ffffcd}) &&
+        MatchWords(image+0x56fb88,{0xa9bc5ff8,0xa90157f6,0xa9024ff4,0xa9037bfd}) &&
+        MatchWords(image+SeedsDestroyOffset,{0xa9be4ff4,0xa9017bfd,0x910043fd,0xaa0003f3}) &&
+        MatchWords(image+CounterAddOffset,{0xa9ba6ffc,0xa90167fa,0xa9025ff8,0xa90357f6}) &&
+        MatchWords(image+0x572488,{0xaa0103e8,0x52800001,0x35000088,0x39400008}) &&
+        MatchWords(image+0x67155c,{0x2940db15,0x9147da68,0x912d4101,0x910023e0});
 }
 
 static NSString *UUID(const mach_header_64 *header) {
@@ -293,6 +314,8 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
     double _lastScan;
     BOOL _installed;
     BOOL _switchReady;
+    BOOL _restartReady;
+    IsaacDrop::RestartHold _restartHold;
     BOOL _searching, _searchReady;
     uintptr_t _candidate;
     NSUInteger _searchAttempts;
@@ -311,7 +334,9 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
         _segments = Segments(_header,_slide);
         _playerTables = PlayerVTables(_segments);
         _switchReady = SwitchCodeMatches(reinterpret_cast<uintptr_t>(_header));
+        _restartReady = RestartCodeMatches(reinterpret_cast<uintptr_t>(_header));
         ISDLog(@"D Infinity touch-switch code validation %@",_switchReady ? @"passed" : @"rejected");
+        ISDLog(@"native fresh-run restart code validation %@",_restartReady ? @"passed" : @"rejected");
     }
     return self;
 }
@@ -433,5 +458,84 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
     }
 }
 - (void)releasePress { Gesture.End(); ISDLog(@"Drop touch up"); }
-- (void)cancel { Available.store(false,std::memory_order_release); Gesture.Cancel(); }
+- (void)cancel { Available.store(false,std::memory_order_release); Gesture.Cancel(); [self cancelRestart]; }
+
+- (uintptr_t)restartIdentity {
+    uintptr_t game = 0; uint32_t seed = 0;
+    if (!_header || !Read(reinterpret_cast<uintptr_t>(_header)+GameGlobal,&game,8) ||
+        !Read(game+0x25d44,&seed,4) || !seed) return 0;
+    return (game >> 4) ^ (uintptr_t(seed) << 32);
+}
+- (BOOL)restartAvailable {
+    if (!_restartReady || ![self gameplayAvailable]) return NO;
+    CADisplayLink *link = NativeLink;
+    if (!link || CACurrentMediaTime()-link.timestamp > .25) return NO;
+    uintptr_t image = reinterpret_cast<uintptr_t>(_header), manager = 0, game = 0;
+    uint32_t state = 0, restriction = 0; uint8_t pending = 1;
+    float fade = 1;
+    if (!Read(image+GameGlobal,&game,8) || game != _lastGame ||
+        !Read(image+ManagerGlobal,&manager,8) || !manager ||
+        !Read(manager+0x204c0,&state,4) || state != 2 ||
+        !Read(manager+0x1f6b40,&pending,1) || pending ||
+        !Read(game+0x1cf444,&fade,4) || !std::isfinite(fade) || fade != 0 ||
+        !Read(game+0x1cf4c0,&restriction,4) || restriction) return NO;
+    Span players{}; uintptr_t player = 0; uint32_t character = UINT32_MAX;
+    int32_t edenTokens = 0;
+    if (!Read(game+_playerOffset,&players,sizeof(players)) || !Read(players.begin,&player,8) ||
+        !Read(player+0x1738,&character,4) || character > 40 ||
+        !Read(manager+0x207cc,&edenTokens,4)) return NO;
+    // The native restart-input path blocks Eden variants without a token.
+    return !((character == 9 || character == 30) && edenTokens <= 0);
+}
+- (BOOL)restartDown:(unsigned)source {
+    BOOL available = [self restartAvailable];
+    BOOL accepted = _restartHold.Down(source,CACurrentMediaTime(),[self restartIdentity],available);
+    if (accepted) ISDLog(@"restart hold began (source %u)",source);
+    return accepted;
+}
+- (void)restartUp:(unsigned)source { _restartHold.Up(source); }
+- (void)cancelRestart { _restartHold.Cancel(); }
+- (BOOL)restartTransitionPending { return _restartHold.TransitionPending(); }
+- (BOOL)restartContextAvailable {
+    // Do not require a room, ready input or a completed fade here: those may
+    // disappear during our own queued restart. Actual pause/menu state must
+    // still stop repetition immediately, including during that transition.
+    if (!_restartReady || !_installed || !NSThread.isMainThread ||
+        UIApplication.sharedApplication.applicationState != UIApplicationStateActive) return NO;
+    uintptr_t image = reinterpret_cast<uintptr_t>(_header), game = 0, manager = 0;
+    uint32_t state = 0, restriction = 0; int32_t pause = -1;
+    return Read(image+ManagerGlobal,&manager,8) && manager &&
+        Read(manager+0x204c0,&state,4) && state == 2 &&
+        Read(image+GameGlobal,&game,8) && game &&
+        Read(game+0x10dfd8,&pause,4) && pause == 0 &&
+        Read(game+0x1cf4c0,&restriction,4) && restriction == 0;
+}
+- (void)pollRestart {
+    if (!_restartHold.Poll(CACurrentMediaTime(),[self restartIdentity],
+            [self restartAvailable],[self restartContextAvailable])) return;
+    // This runs between native frames on the main thread. The native queue is
+    // consumed by Manager::Update; never destroy Game from an input callback.
+    uintptr_t image = reinterpret_cast<uintptr_t>(_header), manager = 0, game = 0;
+    uintptr_t player = 0; Span players{};
+    uint32_t character = UINT32_MAX; int32_t counter = 0;
+    if (!Read(image+ManagerGlobal,&manager,8) || !Read(image+GameGlobal,&game,8) ||
+        !Read(game+_playerOffset,&players,sizeof(players)) || !Read(players.begin,&player,8) ||
+        !Read(player+0x1738,&character,4) || !Read(manager+0x207d0,&counter,4) ||
+        counter < 0 || !Writable(manager,0x1f6cf0) || !Writable(game+0x25d40,0x70)) return;
+    using CopySeeds = void (*)(void *,const void *);
+    using DestroySeeds = void (*)(void *);
+    using AddCounter = void (*)(void *,uint32_t,int32_t);
+    using QueueRestart = void (*)(void *,const void *,int,int);
+    // Seeds is a 0x70-byte native C++ object with an owning tree. Its real
+    // constructor/destructor are required, not memcpy or a zeroed fake seed.
+    alignas(16) std::array<uint8_t,0x70> seeds{};
+    reinterpret_cast<CopySeeds>(image+SeedsCopyOffset)(seeds.data(),reinterpret_cast<void *>(game+0x25d40));
+    auto add = reinterpret_cast<AddCounter>(image+CounterAddOffset);
+    add(reinterpret_cast<void *>(manager+0x204d0),22,-counter);
+    if (character == 9 || character == 30) add(reinterpret_cast<void *>(manager+0x204d0),21,-1);
+    reinterpret_cast<QueueRestart>(image+QueueRestartOffset)(reinterpret_cast<void *>(manager),seeds.data(),0,1);
+    reinterpret_cast<DestroySeeds>(image+SeedsDestroyOffset)(seeds.data());
+    _restartHold.Queued(CACurrentMediaTime());
+    ISDLog(@"native fresh-run restart queued; 1-second repeat while held; character/difficulty retained");
+}
 @end

@@ -1,8 +1,8 @@
 Package: com.emp0ry.isaacdrop
 Name: Isaac Drop (Ctrl)
-Version: 0.1.1
+Version: 0.1.2
 Architecture: iphoneos-arm64
-Description: Invisible bottom-left native Drop control for Isaac Repentance on iOS.
+Description: Invisible native Drop and repeating Restart controls for Isaac Repentance on iOS.
 Maintainer: emp0ry
 Author: emp0ry
 Section: Tweaks

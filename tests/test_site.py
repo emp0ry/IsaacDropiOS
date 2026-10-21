@@ -39,6 +39,7 @@ class WebsiteTests(unittest.TestCase):
         self.assertEqual(set(page.assets), {
             "IsaacDrop.dylib", "IsaacDrop-rootless.deb",
             "IsaacDrop-LiveContainer.framework.zip", "IsaacDrop-Embedded.zip",
+            "IsaacDrop-PlayCover.dylib",
             "SHA256SUMS",
         })
 

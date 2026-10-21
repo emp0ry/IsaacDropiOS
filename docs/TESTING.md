@@ -27,7 +27,29 @@ not change saves. The control is intentionally invisible.
 9. Repeat in LiveContainer with only its app-specific framework loaded. Device
    testing on a jailbreak is not proof of every non-jailbroken runtime policy.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacDrop 0.1.1 ready`,
+## Restart checks
+
+Use a disposable run: these checks intentionally replace the current run.
+
+1. Tap R or the top-center 72 x 64 point zone for less than one second. Nothing
+   should restart. Hold either for one second: a fresh run should begin with
+   the same character and difficulty, without acquired items.
+2. Keep R held across at least three restarts. Repeat with one held finger in
+   the top-center zone. The interval should be one second, or longer when a
+   native load has not finished. Release and confirm the loop stops immediately.
+3. Repeat in a seeded run, where the native seed can remain unchanged. Repeating
+   must still work, without issuing multiple requests into a single transition.
+4. Cancel a hold by sliding out, pausing, opening a dialog/text field, switching
+   apps or losing focus. Returning to the run must not resume the cancelled hold.
+5. In PlayCover, test physical R in English and another keyboard layout. Shift,
+   Ctrl, Option and Command combinations must not start a restart. The Debug
+   Console grave shortcut and typing R in a text field must still work.
+6. Check the native Eden-token restriction and unsupported-game fail-closed
+   behavior. Repeating must never bypass native restart restrictions.
+
+Log checkpoints: `native Drop instance adapter installed`, `IsaacDrop 0.1.2 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
-and with D Infinity equipped `D Infinity touch switch <old> -> <new>`.
+`native fresh-run restart code validation passed`, and
+`native fresh-run restart queued; 1-second repeat while held`. With D Infinity
+equipped, look for `D Infinity touch switch <old> -> <new>`.
 Build/source checks and loading logs alone do not prove gameplay acceptance.

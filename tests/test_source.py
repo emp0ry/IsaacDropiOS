@@ -50,9 +50,21 @@ class SourceTests(unittest.TestCase):
         self.assertIn("if (next == 0)", source)
         self.assertIn("D Infinity touch switch %d -> %d", source)
 
+    def test_restart_repeats_keep_only_their_own_transition(self):
+        native = (ROOT / "src/ISDNativeInput.mm").read_text()
+        bootstrap = (ROOT / "src/ISDBootstrap.m").read_text()
+        policy = (ROOT / "include/ISDRestartPolicy.hpp").read_text()
+        self.assertIn("Seconds = 1.0", policy)
+        self.assertIn("_restartHold.Queued(CACurrentMediaTime())", native)
+        self.assertIn("[self restartContextAvailable]", native)
+        self.assertIn("restartTransitionPending", bootstrap)
+        self.assertIn("[self.input pollRestart]", bootstrap)
+        self.assertIn("CGRectGetMidX(bounds)-36,CGRectGetMinY(bounds),72,64", bootstrap)
+        self.assertNotIn("1.5 seconds", bootstrap)
+
     def test_packages(self):
         info = plistlib.loads((ROOT / "livecontainer/Info.plist").read_bytes())
-        self.assertEqual(info["CFBundleShortVersionString"], "0.1.1")
+        self.assertEqual(info["CFBundleShortVersionString"], "0.1.2")
         self.assertEqual(info["CFBundleExecutable"], "IsaacDrop")
         filt = plistlib.loads((ROOT / "package/IsaacDrop.plist").read_bytes())
         self.assertEqual(filt["Filter"]["Bundles"], ["com.Nicalis.Isaac-iOS"])

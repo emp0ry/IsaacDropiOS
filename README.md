@@ -16,6 +16,7 @@ Console. They can remain installed independently.
 | LiveContainer app-specific tweaks | [IsaacDrop-LiveContainer.framework.zip](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-LiveContainer.framework.zip) |
 | Direct embedding | [IsaacDrop-Embedded.zip](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-Embedded.zip) |
 | Standalone ARM64 library | [IsaacDrop.dylib](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop.dylib) |
+| PlayCover on Apple silicon | [IsaacDrop-PlayCover.dylib](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-PlayCover.dylib) |
 
 Use one loading method, then fully restart Isaac. Check release files against
 [SHA256SUMS](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/SHA256SUMS).
@@ -34,10 +35,29 @@ an unpaused run. The zone ends at the actual screen edge, not the game HUD edge.
 - Sliding out cancels. Pause, menus, backgrounding and loss of the game host
   release input. A ten-second watchdog prevents a lost touch-end from sticking.
 
-No text, icon, outline, highlight, or extra window is drawn. Only this small zone
-receives touches; the game retains the rest of the screen. This is a shared
-Drop action, not a separate delete-card command: native rules and restrictions
-still apply.
+No text, icon, outline, highlight, or extra window is drawn. Only the two small
+control zones receive touches; the game retains the rest of the screen. The Drop
+control uses the shared native action, not a separate delete-card command:
+native rules and restrictions still apply.
+
+### Restart (R)
+
+- Hold **R** on a hardware keyboard, or hold the invisible **top-center
+  72 x 64 point** zone, for **1 second** to start a fresh run. Keep holding to
+  restart repeatedly at **1-second intervals**; release to stop.
+- A short press does nothing. Releasing, sliding out, pausing, opening text
+  entry, losing focus or suspending the game cancels an unfinished hold.
+- The native restart queue retains the character, difficulty and native seed
+  rules. This is not the R Key collectible: acquired items are not retained.
+- Repeats wait for the previous native restart to finish; a slow load can make
+  an interval longer, but requests never pile up. The keyboard shortcut uses the
+  physical R key in PlayCover, including with a non-English keyboard layout.
+- Native restrictions still apply, including Eden token checks. Menus, paused
+  runs, transitions and text fields do not accept the shortcut.
+
+The initial native restart was confirmed in PlayCover. The repeating-hold
+update has host tests and still needs gameplay confirmation. It does not replace
+or disable the bottom-left Drop control or the other installed mods.
 
 ## Installation
 
@@ -47,6 +67,11 @@ still apply.
 - **Embedded app:** normally sign and embed `IsaacDrop.dylib` inside the app,
   for example using `@executable_path/Frameworks/IsaacDrop.dylib` as its load path.
   The embedded archive contains no game or resource database.
+- **PlayCover:** use `IsaacDrop-PlayCover.dylib`, the Mac Catalyst build, instead
+  of the iPhone library. Embed it using your existing signed-app workflow and
+  preserve the app's entitlements and other mods. To replace an existing Drop
+  installation, keep its load path and replace just its library. Fully restart
+  Isaac afterward. This is for the iOS game in PlayCover, not native macOS Isaac.
 
 Use one loading method per installation. The dylib has no jailbreak dependency.
 ElleKit is needed only for the optional jailbreak loader package. No JIT or
@@ -62,8 +87,8 @@ copy of its complete method table and RTTI. Only that validated writable input
 object's table pointer changes. Protected original tables remain untouched.
 No page-protection changes, instruction patching, native
 item removal, active-item invocation, save editing, or injected UITouch is used.
-Original physical input and all other actions pass through unchanged. A foreign
-hook in these exact slots is rejected rather than overwritten. The mod disables
+Except for an accepted R shortcut, physical input and other actions pass through
+unchanged. A foreign hook in these exact slots is rejected rather than overwritten. The mod disables
 itself if table, object, or executable validation fails.
 
 Tap edge state follows the existing native display link timestamp, keeping
@@ -94,9 +119,10 @@ On macOS with Xcode and an iPhoneOS SDK, Python 3, Node.js, ripgrep and dpkg:
 make release
 ```
 
-Outputs: standalone ARM64 dylib, rootless deb, LiveContainer framework, embedded
-zip, and checksums in `dist/`. Host tests cover tap/hold/cancellation behavior and
-source constraints. See [device checks](docs/TESTING.md) for gameplay acceptance.
+Outputs: iPhone and PlayCover ARM64 dylibs, rootless deb, LiveContainer framework,
+embedded zip, and checksums in `dist/`. Host checks cover Drop, repeating restart
+timing, loading transitions, cancellation and keyboard-hook chaining. See
+[device checks](docs/TESTING.md) for gameplay acceptance.
 Diagnostic log: `Library/Application Support/IsaacDrop/drop.log` inside Isaac's
 own sandbox. No account credentials or saves are logged.
 

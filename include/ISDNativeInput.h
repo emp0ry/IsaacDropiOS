@@ -11,5 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)press;
 - (void)releasePress;
 - (void)cancel;
+- (BOOL)restartAvailable;
+- (BOOL)restartContextAvailable;
+- (BOOL)restartTransitionPending;
+- (BOOL)restartDown:(unsigned)source;
+- (void)restartUp:(unsigned)source;
+- (void)pollRestart;
+- (void)cancelRestart;
 @end
 NS_ASSUME_NONNULL_END

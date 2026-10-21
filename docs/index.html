@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#120b24">
-  <meta name="description" content="Invisible Drop (Ctrl) control for native iOS Repentance. Tap to switch D Infinity; hold to drop trinkets, cards, runes and pills. Rootless, LiveContainer and embedded builds.">
+  <meta name="description" content="Invisible Drop (Ctrl) and Restart (R) controls for native iOS Repentance. Switch D Infinity, drop pocket items, or hold to restart every second. iPhone and PlayCover builds.">
   <meta name="author" content="emp0ry">
   <meta name="robots" content="index, follow">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -20,7 +20,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Isaac Drop (Ctrl)">
   <meta property="og:title" content="Tap to switch. Hold to drop.">
-  <meta property="og:description" content="An invisible bottom-left Drop control for native iOS Repentance. Independent of EID and Steam Sync, with rootless, LiveContainer and embedded builds.">
+  <meta property="og:description" content="Invisible bottom-left Drop and top-center Restart controls for iOS Repentance. Hold R to restart every second. Independent of EID and Steam Sync, with iPhone and PlayCover builds.">
   <meta property="og:url" content="https://isaacctrlios.emp0ry.com/">
   <meta name="twitter:card" content="summary">
   <script defer src="script.js"></script>
@@ -45,7 +45,7 @@
       <div class="container hero-copy">
         <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Repentance on iOS · Native input · Invisible control</div>
         <h1>Tap to switch.<br><span>Hold to drop.</span></h1>
-        <p class="hero-text">A small touch control for the things Isaac’s iOS controls leave out. Switch D Infinity and drop your pocket items from an invisible zone in the bottom-left corner. Nothing extra on your screen.</p>
+        <p class="hero-text">Small controls for the things Isaac’s iOS controls leave out. Switch D Infinity and drop pocket items from the bottom-left corner. Hold R or the top-center zone to restart every second. Nothing extra on your screen.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#downloads">Download Latest <span aria-hidden="true">↓</span></a>
           <a class="button button-secondary" href="#controls">Find the control</a>
@@ -61,12 +61,13 @@
 
     <section class="section controls-section" id="controls">
       <div class="container">
-        <div class="section-head"><span class="section-kicker">Where to touch</span><h2>Bottom-left. Right at the edge.</h2><p>The active area is 72 × 64 screen points. It is invisible in Isaac and available only during an unpaused run.</p></div>
+        <div class="section-head"><span class="section-kicker">Where to touch</span><h2>Bottom-left to drop.<br>Top-center to restart.</h2><p>Each active area is 72 × 64 screen points. Both are invisible in Isaac and available only during an unpaused run.</p></div>
         <div class="control-guide">
-          <div class="screen-guide" role="img" aria-label="Landscape screen diagram: the invisible Drop touch zone is at the very bottom-left corner, not the edge of the game room.">
+          <div class="screen-guide" role="img" aria-label="Landscape screen diagram: invisible Drop zone at the bottom-left screen edge and Restart zone at the top-center edge.">
             <div class="guide-top"><span>LANDSCAPE SCREEN</span><span class="guide-pause" aria-hidden="true">Ⅱ</span></div>
             <div class="guide-room"><span class="room-label">Your run stays clear.</span><span class="guide-pedestal" aria-hidden="true"></span></div>
-            <div class="guide-zone"><span>72 × 64 pt</span><strong>Touch here</strong></div>
+            <div class="guide-zone"><span>72 × 64 pt</span><strong>Drop (Ctrl)</strong></div>
+            <div class="guide-zone guide-restart"><span>72 × 64 pt</span><strong>Restart (R)</strong></div>
             <div class="guide-home" aria-hidden="true"></div>
             <div class="guide-note">Highlighted here only<br>Invisible in the game</div>
           </div>
@@ -76,6 +77,7 @@
           <article class="gesture"><span class="gesture-number">01 / TAP</span><h3>Switch D Infinity</h3><p>One new press advances one die. It does not use the active item or spend charge. Holding does not repeatedly cycle.</p><div class="dice-demo"><span class="demo-label">Try the sequence</span><output id="die-mode" aria-live="polite">D1</output><button class="button button-secondary" id="cycle-demo" type="button" hidden>Next die →</button></div><p class="small-copy">Website illustration only; this does not control the game.</p></article>
           <article class="gesture"><span class="gesture-number">02 / HOLD</span><h3>Drop what you’re carrying</h3><p>Keep your finger in the zone for the game’s normal drop threshold, about three seconds. Eligible trinkets and pocket items follow Isaac’s own drop rules.</p><div class="pocket-types"><span>Cards</span><span>Runes</span><span>Pills</span><span>Trinkets</span></div><p class="small-copy">No equipped trinket is needed to drop a pocket item.</p></article>
         </div>
+        <aside class="notice"><strong>Hold R, or hold the top-center zone.</strong><p>After one second, start a fresh run with the same character and difficulty. Keep holding to restart every second; release to stop. Native loading can lengthen the interval. Pausing, opening text entry or losing focus cancels the hold. This is a full restart, not the R Key item.</p></aside>
         <aside class="notice"><strong>A Drop control, not a full keyboard.</strong><p>D Infinity cycling is supported. Other short-press Ctrl behaviors are not yet fully supported by the iOS touch path. Sliding out, pausing or backgrounding cancels the held input.</p></aside>
       </div>
     </section>
@@ -83,13 +85,14 @@
     <section class="section downloads" id="downloads">
       <div class="container">
         <div class="section-head"><span class="section-kicker">Downloads</span><h2>Choose your installation.</h2><p>The same native ARM64 code, packaged for your setup. Use only one loading method per Isaac installation.</p></div>
-        <p class="download-status" data-release-status role="status">Isaac Drop v0.1.1 · Release files on GitHub</p>
+        <p class="download-status" data-release-status role="status">Isaac Drop v0.1.2 · Release files on GitHub</p>
         <div class="download-grid">
           <article class="download-card"><div class="download-card-head"><span>ROOTLESS</span><span>DEB</span></div><h3>Jailbroken devices</h3><p>ElleKit injection package for the installed native game. No extra mod is required.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-rootless.deb" data-asset="IsaacDrop-rootless.deb">Download DEB ↓</a></article>
           <article class="download-card"><div class="download-card-head"><span>LIVECONTAINER</span><span>ZIP</span></div><h3>App-specific framework</h3><p>Import the framework archive into Isaac’s own tweak folder, not the shared global folder.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-LiveContainer.framework.zip" data-asset="IsaacDrop-LiveContainer.framework.zip">Download framework ↓</a></article>
           <article class="download-card"><div class="download-card-head"><span>EMBEDDED</span><span>ZIP</span></div><h3>App-bundle package</h3><p>The standalone dylib with setup notes. Embed it into the app and sign the complete bundle.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-Embedded.zip" data-asset="IsaacDrop-Embedded.zip">Download package ↓</a></article>
         </div>
         <div class="download-extras"><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop.dylib" data-asset="IsaacDrop.dylib">Standalone dylib</a><span aria-hidden="true">·</span><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/SHA256SUMS" data-asset="SHA256SUMS">SHA-256 checksums</a><span aria-hidden="true">·</span><a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest" data-release-link>Release notes</a></div>
+        <p class="section-footnote">Playing the iOS game in PlayCover? Use the <a href="https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-PlayCover.dylib" data-asset="IsaacDrop-PlayCover.dylib">Mac Catalyst / PlayCover dylib</a> instead of the iPhone build.</p>
       </div>
     </section>
 
@@ -115,7 +118,7 @@
     <section class="section faq" id="faq">
       <div class="container narrow">
         <div class="section-head"><span class="section-kicker">Good to know</span><h2>Small control. Clear limits.</h2></div>
-        <details><summary>I cannot see the button. Is that normal?</summary><p>Yes. There is no visible button. During an unpaused run, touch the bottom-left 72 × 64 screen points at the actual screen edge. The zone is disabled in menus and while paused.</p></details>
+        <details><summary>I cannot see the buttons. Is that normal?</summary><p>Yes. During an unpaused run, the bottom-left 72 × 64 screen points are Drop and the top-center 72 × 64 points are Restart. Both zones are invisible and disabled in menus and while paused.</p></details>
         <details><summary>Does it work without a jailbreak?</summary><p>The dylib has no jailbreak dependencies. LiveContainer and direct embedding are supported loading formats; a directly embedded dylib must be code-signed with the app. This is not an App Store app and does not change Apple’s signing requirements.</p></details>
         <details><summary>Will it delete my card or use the die?</summary><p>Holding supplies the game’s native Drop input; the game handles eligible drops. D Infinity tapping changes its selected mode and refreshes the native HUD, without activating the item. The mod does not edit save files directly.</p></details>
         <details><summary>Does it replace every Ctrl action?</summary><p>No. This release supports D Infinity cycling and native hold-to-drop. Other short-press Ctrl behaviors still need their own iOS compatibility work.</p></details>
@@ -123,6 +126,6 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><a class="brand" href="#top">Isaac Drop <span class="footer-version" data-version>v0.1.1</span></a><p>Independent, unofficial mod by emp0ry. Not affiliated with Nicalis.</p><small>© <span data-year>2026</span> emp0ry · MIT license</small></div><nav aria-label="Related projects"><a href="https://isaaceidios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac EID ↗</a><a href="https://isaacsteamios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac Steam Sync ↗</a><a href="https://github.com/emp0ry/IsaacDropiOS" target="_blank" rel="noopener noreferrer">Source & issues ↗</a></nav></div></footer>
+  <footer class="site-footer"><div class="container footer-grid"><div><a class="brand" href="#top">Isaac Drop <span class="footer-version" data-version>v0.1.2</span></a><p>Independent, unofficial mod by emp0ry. Not affiliated with Nicalis.</p><small>© <span data-year>2026</span> emp0ry · MIT license</small></div><nav aria-label="Related projects"><a href="https://isaaceidios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac EID ↗</a><a href="https://isaacsteamios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac Steam Sync ↗</a><a href="https://github.com/emp0ry/IsaacDropiOS" target="_blank" rel="noopener noreferrer">Source & issues ↗</a></nav></div></footer>
 </body>
 </html>

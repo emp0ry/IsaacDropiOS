@@ -54,12 +54,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in IsaacDrop.dylib IsaacDrop-rootless.deb \
+          for file in IsaacDrop.dylib IsaacDrop-PlayCover.dylib IsaacDrop-rootless.deb \
             IsaacDrop-LiveContainer.framework.zip IsaacDrop-Embedded.zip SHA256SUMS; do
             test -s "dist/$file"
           done
           (cd dist && shasum -a 256 -c SHA256SUMS)
           codesign --verify --strict build/IsaacDrop.framework
+          codesign --verify --strict dist/IsaacDrop-PlayCover.dylib
+          xcrun vtool -show-build dist/IsaacDrop-PlayCover.dylib | grep -q 'platform MACCATALYST'
           unzip -l dist/IsaacDrop-Embedded.zip
           unzip -l dist/IsaacDrop-LiveContainer.framework.zip
 
@@ -80,8 +82,8 @@ jobs:
         run: |
           set -euo pipefail
           gh release create "v${VERSION}" --verify-tag --target "$GITHUB_SHA" \
-            --title "Isaac Drop (Ctrl) iOS v${VERSION}" \
+            --title "Isaac Drop (Ctrl) + Restart v${VERSION}" \
             --notes-file "docs/RELEASE_NOTES_v${VERSION}.md" --latest \
-            dist/IsaacDrop.dylib dist/IsaacDrop-rootless.deb \
+            dist/IsaacDrop.dylib dist/IsaacDrop-PlayCover.dylib dist/IsaacDrop-rootless.deb \
             dist/IsaacDrop-LiveContainer.framework.zip \
             dist/IsaacDrop-Embedded.zip dist/SHA256SUMS
