@@ -1,6 +1,6 @@
 # Isaac Fixes for iOS
 
-Small native control fixes for The Binding of Isaac: Repentance on iPhone and in PlayCover. Previously **Isaac Drop (Ctrl)**. One mod now includes Drop, restart, pause, Enter/Space, and Mac fullscreen controls.
+Small native control and HUD fixes for The Binding of Isaac: Repentance on iPhone and in PlayCover. Previously **Isaac Drop (Ctrl)**. One mod includes Drop, restart, pause, Enter/Space, Mac fullscreen, and sharper Mini Extra HUD icons.
 
 [Website](https://isaacfixesios.emp0ry.com/) · [Downloads](https://github.com/emp0ry/IsaacFixesiOS/releases/latest) · [Changelog](CHANGELOG.md) · [Report a bug](https://github.com/emp0ry/IsaacFixesiOS/issues)
 
@@ -22,6 +22,12 @@ Restart follows the game's normal character, difficulty, seed, and Eden-token ru
 Enter on **Continue** resumes; Enter on **Options** opens Options. It is not a forced pause toggle or a direct active-item call. The physical Space key still works. F uses macOS's native fullscreen transition and returns to windowed mode when pressed again.
 
 Normal text fields, Debug Console input, dialogs, and modified keyboard shortcuts are left alone. D Infinity cycling and hold-to-drop are supported; other short-press Ctrl behaviors are not yet fully supported by the iOS touch path.
+
+## Sharper Mini HUD
+
+Enable **Extra HUD: Mini** in the game's own options. The mod displays the original 32x32 item art directly at screen resolution in the same compact cells, avoiding the game's intermediate reduction to 16x16. No smoothing or global filter is enabled. It reads icons from your installed game; no game art is included in the download.
+
+Normal HUD, paused menus, procedural/special-shader icons, missing art, and cells smaller than 32 physical pixels keep the native renderer. Confirmed working in PlayCover; physical iPhone testing remains separate.
 
 ## Downloads
 

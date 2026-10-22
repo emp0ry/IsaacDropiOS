@@ -1,8 +1,8 @@
 Package: com.emp0ry.isaacdrop
 Name: Isaac Fixes
-Version: 0.2.0
+Version: 0.2.1
 Architecture: iphoneos-arm64
-Description: Drop, repeating restart, Escape pause, Enter/Space and PlayCover fullscreen fixes for Isaac iOS.
+Description: Native control fixes and sharper Mini Extra HUD icons for Isaac iOS and PlayCover.
 Maintainer: emp0ry
 Author: emp0ry
 Section: Tweaks

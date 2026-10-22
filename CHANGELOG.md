@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Withdraw the experimental Mini HUD linear minification change after in-game feedback: it blurred icons shortly after switching to Mini. No native sampler or GL state is changed by the replacement build.
+- Improve Extra HUD: Mini icon clarity. Use full 32x32 PNGs from the user's game in the native compact layout, bypassing the low-resolution scene downsample without linear filtering. Native coordinates, ordering and alpha are preserved. Protected code, global samplers, saves and assets are unchanged.
+- Validate the native Mini caller, all image-vtable methods/RTTI, and image-reference ABI before attaching to individual image objects. Other draws, normal HUD, paused menus, unknown/procedural art, and missing PNGs retain the original renderer.
+- The user confirmed the sharper Mini HUD in PlayCover. Host checks, the supported binary's draw/ref ABI verification, and package/signature audits passed. Separate physical iPhone coverage is still needed.
+
 ## 0.2.0
 
 Isaac Drop (Ctrl) is now **Isaac Fixes**: one native mod for the small controls missing from Isaac iOS and PlayCover.

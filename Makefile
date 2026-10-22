@@ -6,7 +6,7 @@ CLANG := $(shell xcrun --sdk iphoneos --find clang++)
 MIN_IOS ?= 15.0
 DYLIB := $(ROOT)/build/IsaacFixes.dylib
 PLAYCOVER_DYLIB := $(ROOT)/build/IsaacFixes-PlayCover.dylib
-SOURCES := src/ISDBootstrap.m src/ISDHost.mm src/ISDNativeInput.mm src/ISDRestartKey.m src/ISDFullscreen.m src/IESKeyboard.m src/IESInputContext.m
+SOURCES := src/ISDBootstrap.m src/ISDHost.mm src/ISDNativeInput.mm src/ISDRestartKey.m src/ISDFullscreen.m src/IESKeyboard.m src/IESInputContext.m src/ISDMiniHUD.mm
 STAGE := $(ROOT)/build/fixes-deb-stage
 FRAMEWORK := $(ROOT)/build/IsaacFixes.framework
 
@@ -29,6 +29,8 @@ test:
 	build/test_drop_policy
 	xcrun --sdk macosx clang++ -isysroot "$(MACSDK)" -std=c++17 -Wall -Wextra -Werror -Iinclude tools/check_restart_policy.cpp -o build/test_restart_policy
 	build/test_restart_policy
+	xcrun --sdk macosx clang++ -isysroot "$(MACSDK)" -std=c++17 -Wall -Wextra -Werror -Iinclude tools/check_mini_hud.cpp -o build/check_mini_hud
+	build/check_mini_hud
 	xcrun --sdk macosx clang -isysroot "$(MACSDK)" -fobjc-arc -fblocks -Wall -Wextra -Werror \
 		-Itools/check_support -Iinclude src/ISDRestartKey.m tools/check_restart_key.m \
 		-framework Foundation -o build/check_restart_key

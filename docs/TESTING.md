@@ -69,3 +69,14 @@ Build/source checks and loading logs alone do not prove gameplay acceptance.
 7. Confirm Drop, D Infinity, R, Esc, EID, Steam Sync, and Debug Console still work. The log should include `native Enter/Space alias installed` and `R, Escape and F input installed`.
 
 Host checks include fullscreen transition/failure handling and the actual native Enter adapter with a simulated pause selection. These are not a substitute for the in-game checks above.
+
+## Extra HUD: Mini quality
+
+The first experiment used linear minification and was rejected in gameplay because it blurred the icons. It must not be enabled again or described as a confirmed quality fix.
+
+1. Fully restart after installing the test build. Switch normal Extra HUD to Mini, wait several seconds, then switch Off and back to Mini. There must be no delayed smoothing, doubled icons or stale overlays.
+2. Compare the same existing items in normal and Mini HUD. For a disposable run, fine-detail examples are `giveitem c118`, `giveitem c182`, `giveitem c331`, and `giveitem c395`. The source remains 32x32 rather than being reduced to 16 game pixels first.
+3. Resize the PlayCover window and enter/exit fullscreen. Icons must retain the native compact cells, order, right-edge alignment and translucency. At fewer than 32 physical pixels per cell, keep the native renderer instead of claiming recovered detail.
+4. Pause, open Options/EID/Console, resume, leave the run, and Continue. No icon must remain over menus. Normal HUD and all unrelated native draws retain the original renderer. Procedural art, special native shaders and missing PNGs fall back rather than disappearing.
+5. Verify Drop, R, Esc, Enter, F, and other mods still work. No saves, options, assets, samplers, GL bindings or executable pages are changed. Image references are retained while an individual-image vptr adapter is active, restored before release, with all other methods and RTTI preserved.
+6. Logs should contain `Mini HUD display-density adapter validation passed` and, after a matching draw, `Mini HUD full-source draw active` with virtual screen, view and physical icon dimensions. A screenshot or short recording is still needed for visual acceptance; passing build checks alone are insufficient.
