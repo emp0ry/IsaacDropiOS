@@ -1,6 +1,7 @@
 #import "ISDMiniHUD.h"
 #import "ISDHost.h"
 #include "ISDMiniHUDPolicy.hpp"
+#include "IsaacPresentationState.hpp"
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
 #import <mach/mach.h>
@@ -193,6 +194,7 @@ static void *MiniDraw(uintptr_t image,const HUDSource *source,const HUDQuad *des
     std::array<float,2> _screen;
     NSUInteger _drawCount;
     BOOL _logged;
+    IsaacPresentation::Visibility _presentationVisibility;
 }
 - (instancetype)init {
     if (!(self=[super init])) return nil;
@@ -200,7 +202,7 @@ static void *MiniDraw(uintptr_t image,const HUDSource *source,const HUDQuad *des
         const auto *header=reinterpret_cast<const mach_header_64 *>(_dyld_get_image_header(i));
         if (!Supported(header)) continue;
         uintptr_t base=reinterpret_cast<uintptr_t>(header);
-        if (CodeMatches(base)) Base=base;
+        if (CodeMatches(base) && IsaacPresentation::Validate(base,[](uintptr_t a,void *p,size_t n){ return Read(a,p,n); })) Base=base;
         break;
     }
     ISDLog(@"Mini HUD display-density adapter validation %@; no sampler changes",Base?@"passed":@"rejected");
@@ -216,6 +218,9 @@ static void *MiniDraw(uintptr_t image,const HUDSource *source,const HUDQuad *des
     [CATransaction begin]; [CATransaction setDisableActions:YES]; _surface.hidden=YES; [CATransaction commit];
 }
 - (BOOL)context:(uintptr_t *)gameOut {
+    IsaacPresentation::State presentation;
+    bool captured=IsaacPresentation::Capture(Base,[](uintptr_t a,void *p,size_t n){ return Read(a,p,n); },presentation);
+    if (!_presentationVisibility.Observe(presentation,captured,false,false,CACurrentMediaTime())) return NO;
     uintptr_t manager=0,game=0,room=0; int mode=-1,pause=-1; uint32_t seed=0;
     uint32_t state=0; uint8_t pending=1; float fade=1;
     if (!Read(Base+ManagerGlobal,&manager,8) || !manager || !Read(manager+ExtraHUD,&mode,4) || mode!=2 ||

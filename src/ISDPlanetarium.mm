@@ -2,6 +2,7 @@
 #import "ISDHost.h"
 #include "ISDPlanetariumPolicy.hpp"
 #include "ISDHUDNumericFont.hpp"
+#include "IsaacPresentationState.hpp"
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
 #import <mach/mach.h>
@@ -270,6 +271,7 @@ bool DogmaEntity(uintptr_t entity,bool& flash) {
     double _chance;
     CFTimeInterval _lastSnapshot,_lastNativeFrame;
     IsaacFixes::PlanetariumPopup _popup;
+    IsaacPresentation::Visibility _presentationVisibility;
     NSString *_slot,*_cacheKey;
     NSMutableDictionary *_cache;
     bool _dogmaEnded;
@@ -282,7 +284,7 @@ bool DogmaEntity(uintptr_t entity,bool& flash) {
         const auto *h=reinterpret_cast<const mach_header_64 *>(_dyld_get_image_header(i));
         if (!Supported(h)) continue;
         uintptr_t base=reinterpret_cast<uintptr_t>(h);
-        if (CodeMatches(base)) _base=base;
+        if (CodeMatches(base) && IsaacPresentation::Validate(base,[](uintptr_t a,void *p,size_t n){ return Read(a,p,n); })) _base=base;
         break;
     }
     ISDLog(@"Planetarium native getter/HUD ABI validation %@",_base?@"passed":@"rejected");
@@ -400,7 +402,11 @@ bool DogmaEntity(uintptr_t entity,bool& flash) {
     uint8_t pending=1,hud=0,found=0; float fade=1; int pause=-1,roomStage=0,roomType=0;
     if (!Read(_base+ManagerGlobal,manager) || !manager || !Read(manager+0x204c0,state) ||
         !Read(_base+GameGlobal,game) || !game) { _surface.hidden=YES; return; }
+    IsaacPresentation::State presentation;
+    bool captured=IsaacPresentation::Capture(_base,[](uintptr_t a,void *p,size_t n){ return Read(a,p,n); },presentation);
+    bool visible=_presentationVisibility.Observe(presentation,captured,false,false,CACurrentMediaTime());
     if (state!=2) { _initialized=false; _surface.hidden=YES; return; }
+    if (!visible) { _surface.hidden=YES; return; }
     if (!Read(manager+0x1f6b40,pending) || pending || !Read(game+0x1cf444,fade) || !std::isfinite(fade) || fade!=0 ||
         !Read(game+0x21550,room) || !room || !Read(game+0x25d44,seed) || !seed ||
         !Read(game+0x10dfd8,pause) || !IsaacFixes::PlanetariumUnpaused(pause)) { _surface.hidden=YES; return; }

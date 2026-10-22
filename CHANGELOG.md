@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Hide Planetarium Chance and the display-density Mini HUD overlay during native room/floor transitions, fades, boss introductions, death screens and cinematics. Both remain hidden on pause.
+- Validate the supported executable's presentation-state signatures before reading these states. This is read-only and does not alter native scene rendering, RNG, saves or assets.
+- Cover the separate boss/large-sprite screen, fullscreen ANM2 playback, post-HUD screen counters and white fades that were missing from the first transition check. Wait for a continuously clear scene for 100 ms after a transition or room change instead of showing an intermediate loading frame.
+- Give an open Debug Console priority over the normal Esc pause action, regardless of key-monitor installation order. Held/released Escape cannot close the console and then toggle pause again.
+- Host checks cover presentation capture/failure states, scene re-entry and both UIKit/Mac key-monitor orders. The separate supported-binary presentation ABI check is read-only; these checks do not replace in-game verification of every cutscene.
+
 ## 0.3.0
 
 - Add a native Planetarium Chance HUD row following the original Repentance mod: game-owned icon/font, 50% alpha, per-floor native chance snapshots, HUD offset and character/Duality positioning, and green/red change popups.

@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "ISDRestartKey.h"
+#import "ISDConsoleCoordination.h"
 #include <assert.h>
 
 NSString *const UIApplicationWillResignActiveNotification = @"CheckSuspend";
@@ -69,6 +70,12 @@ static void MacEvent(NSInteger code, NSInteger type, BOOL repeat, NSUInteger fla
 int main(int argc, char **argv) {
     (void)argv;
     @autoreleasepool {
+        assert(!ISDConsoleClosesForEscape());
+        id consoleObserver=[NSNotificationCenter.defaultCenter addObserverForName:@"com.emp0ry.isaacconsole.closeForEscape"
+            object:nil queue:nil usingBlock:^(NSNotification *n) { ((NSMutableDictionary *)n.object)[@"handled"]=@YES; }];
+        assert(ISDConsoleClosesForEscape());
+        [NSNotificationCenter.defaultCenter removeObserver:consoleObserver];
+        assert(!ISDConsoleClosesForEscape());
         __block int downs = 0, ups = 0, pauses = 0, fullscreen = 0;
         __block BOOL allowed = YES;
         ISDRestartKey *restart = [[ISDRestartKey alloc] initWithHandler:^BOOL(BOOL down) {

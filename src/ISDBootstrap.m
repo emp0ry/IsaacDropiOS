@@ -1,6 +1,7 @@
 #import "ISDNativeInput.h"
 #import "ISDHost.h"
 #import "ISDRestartKey.h"
+#import "ISDConsoleCoordination.h"
 #import "ISDFullscreen.h"
 #import "IESKeyboard.h"
 #import "IESInputContext.h"
@@ -149,6 +150,7 @@ static BOOL EditingText(UIView *view) {
             EditingText(target.restartZone.window)) return NO;
         return [target.input restartDown:2];
     } escapeHandler:^BOOL {
+        if (ISDConsoleClosesForEscape()) return YES;
         ISDController *target = weakSelf;
         UIWindow *window = target.zone.window;
         if (!target || !window || window.hidden || window.rootViewController.presentedViewController ||

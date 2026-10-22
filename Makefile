@@ -33,6 +33,8 @@ test:
 	build/check_mini_hud
 	xcrun --sdk macosx clang++ -isysroot "$(MACSDK)" -std=c++17 -Wall -Wextra -Werror -Iinclude tools/check_planetarium.cpp -o build/check_planetarium
 	build/check_planetarium
+	xcrun --sdk macosx clang++ -isysroot "$(MACSDK)" -std=c++17 -Wall -Wextra -Werror -Iinclude tools/check_presentation.cpp -o build/check_presentation
+	build/check_presentation
 	xcrun --sdk macosx clang -isysroot "$(MACSDK)" -fobjc-arc -fblocks -Wall -Wextra -Werror \
 		-Itools/check_support -Iinclude src/ISDRestartKey.m tools/check_restart_key.m \
 		-framework Foundation -o build/check_restart_key
