@@ -3,9 +3,45 @@
 #include <limits>
 #include <initializer_list>
 #include <cstdio>
+#include <cstring>
+#include <map>
 
 int main() {
     using IsaacDrop::Press;
+    IsaacDrop::ShortDropPress key;
+    assert(!key.Read(false,true));
+    assert(key.Read(true,false)); // Other consumers keep the native hold.
+    assert(key.Read(true,true));
+    for (int i = 0; i < 10000; ++i) {
+        assert(!key.Read(true,true)); // Frames, catch-up updates and autorepeat.
+        assert(key.Read(true,false)); // Long-hold Drop is never shortened.
+    }
+    assert(!key.Read(false,false)); // Release seen by any Drop query re-arms.
+    assert(key.Read(true,true));
+    assert(!key.Read(true,true));
+    assert(!key.Read(false,true));
+    assert(key.Read(true,true));
+
+    constexpr uintptr_t base = 0x100000000, frame = 0x200000000, parent = frame+64;
+    std::map<uintptr_t,uintptr_t> stack{{frame,parent},{parent+8,base+0x52ad88},{parent-8,123}};
+    auto read = [&](uintptr_t at,void *out,size_t n) {
+        auto it = stack.find(at);
+        if (it == stack.end() || n != sizeof(uintptr_t)) return false;
+        memcpy(out,&it->second,n); return true;
+    };
+    assert(IsaacDrop::ShortDropPlayer(base,base+0x8b6544,frame,read) == 123);
+    for (uintptr_t caller : {base+0x8b664c,base+0x52ad88,uintptr_t(0)})
+        assert(!IsaacDrop::ShortDropPlayer(base,caller,frame,read));
+    // The separate native long-hold query must retain raw pressed state.
+    stack[parent+8] = base+0x52aea4;
+    assert(!IsaacDrop::ShortDropPlayer(base,base+0x8b6544,frame,read));
+    stack[parent+8] = base+0x52ad88;
+    for (uintptr_t invalid : {frame,frame-16,frame+1,frame+8192}) {
+        stack[frame] = invalid;
+        assert(!IsaacDrop::ShortDropPlayer(base,base+0x8b6544,frame,read));
+    }
+    stack[frame] = parent; stack.erase(parent-8);
+    assert(!IsaacDrop::ShortDropPlayer(base,base+0x8b6544,frame,read));
     for (int16_t mode = 0; mode < 10; ++mode) {
         int16_t next = -1;
         assert(IsaacDrop::NextDInfinityMode(mode,next));
@@ -60,5 +96,5 @@ int main() {
     assert(!p.Read(std::numeric_limits<double>::quiet_NaN(),21.01,true).pressed);
     p.Begin(-1);
     assert(!p.Read(22,22,true).pressed);
-    std::puts("Drop policy passed: tap, hold, repeated queries, quick taps, cancel, watchdog");
+    std::puts("Drop policy passed: keyboard single-edge, held Drop, exact caller gate, touch, quick taps, cancel, watchdog");
 }

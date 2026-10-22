@@ -31,6 +31,10 @@ not change saves. The control is intentionally invisible.
    game's normal trinket/pocket dropping behavior and immediate release afterward.
 6. With D Infinity, hold without lifting: the first edge should switch at most
    once; holding must not produce a new synthetic trigger every frame.
+   Repeat with physical Ctrl in PlayCover: hold for at least five seconds,
+   then release and press again. Expect exactly one switch for each press,
+   including the D100 wrap with Schoolbag. With a card held, long Ctrl must
+   still drop it. Also check release/repress after pause and switching apps.
 7. Keep moving/shooting with the other finger while tapping the corner. Existing
    game sticks must remain usable, with no stuck stick on cold launch.
 8. Drag out, pause, background, and reopen while holding. Input must release;
@@ -63,7 +67,7 @@ Press Esc in an active run to pause, hold it to confirm it does not toggle again
 then release and press once to resume. Check the native pause animation, music,
 R-loop cancellation, and typing in Console/Steam fields without changing pause.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.3.1 ready`,
+Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.3.2 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
 `native fresh-run restart code validation passed`, and
 `native fresh-run restart queued; 1-second repeat while held`. With D Infinity

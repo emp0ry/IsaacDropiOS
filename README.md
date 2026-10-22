@@ -10,6 +10,7 @@ Small native control and HUD fixes for The Binding of Isaac: Repentance on iPhon
 | --- | --- | --- |
 | Bottom-left invisible zone: tap | Switch D Infinity to the next die without using it or spending charge | iPhone / PlayCover |
 | Bottom-left invisible zone: hold | Native Drop for eligible trinkets, cards, runes, and pills; no trinket required | iPhone / PlayCover |
+| Ctrl with D Infinity | Switch once per press; holding does not cycle repeatedly and still allows native Drop | Hardware keyboard / PlayCover |
 | Hold R, or hold the top-center invisible zone | Fresh run after 1 second; repeat every second until released | Hardware keyboard / touch |
 | Esc | Native pause/resume, one toggle per press | Hardware keyboard / PlayCover |
 | Enter / keypad Enter | Same native input as Space, including confirming the selected pause-menu entry | PlayCover |

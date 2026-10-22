@@ -51,6 +51,19 @@ class SourceTests(unittest.TestCase):
         self.assertIn("if (next == 0)", source)
         self.assertIn("D Infinity touch switch %d -> %d", source)
 
+    def test_d_infinity_keyboard_is_only_the_short_drop_query(self):
+        source = (ROOT / "src/ISDNativeInput.mm").read_text()
+        self.assertIn("KeyboardDropCodeMatches", source)
+        self.assertIn("N4KAGE5Input14DeviceKeyboardE", source)
+        self.assertIn("KeyboardShadow[2+9]", source)
+        self.assertNotIn("KeyboardShadow[2+10] =", source)
+        self.assertNotIn("KeyboardShadow[2+11] =", source)
+        self.assertIn("if (!player) return down", source)
+        self.assertIn("if (item != 489) return down", source)
+        self.assertIn("controller != deviceID", source)
+        self.assertIn("__builtin_frame_address(0)", source)
+        self.assertNotIn("__builtin_frame_address(1)", source)
+
     def test_restart_repeats_keep_only_their_own_transition(self):
         native = (ROOT / "src/ISDNativeInput.mm").read_text()
         bootstrap = (ROOT / "src/ISDBootstrap.m").read_text()

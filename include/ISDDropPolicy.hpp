@@ -13,6 +13,33 @@ inline bool NextDInfinityMode(int16_t current, int16_t& next) {
     return true;
 }
 
+// Native keyboard short-Drop incorrectly uses a held-action query. Consume
+// that particular query once per hold, not once per frame or OS key repeat.
+// All other queries still see the full hold needed for dropping pocket items.
+class ShortDropPress {
+    bool consumed_ = false;
+public:
+    bool Read(bool down, bool shortQuery) {
+        if (!down) { consumed_ = false; return false; }
+        if (!shortQuery) return true;
+        if (consumed_) return false;
+        consumed_ = true;
+        return true;
+    }
+};
+
+// Only recognize the verified native manager -> player short-Drop call.
+// Do not walk an arbitrary stack or use the hold-to-drop call at 0x52aea0.
+template<class Reader> uintptr_t ShortDropPlayer(uintptr_t base, uintptr_t caller,
+                                                uintptr_t frame, Reader read) {
+    if (!base || caller != base+0x8b6544 || !frame || frame%16) return 0;
+    uintptr_t parent = 0, outer = 0, player = 0;
+    if (!read(frame,&parent,sizeof(parent)) || parent <= frame || parent%16 ||
+        parent-frame > 4096 || !read(parent+8,&outer,sizeof(outer)) ||
+        outer != base+0x52ad88 || !read(parent-8,&player,sizeof(player))) return 0;
+    return player;
+}
+
 // One logical press per gesture, visible consistently to every input query in
 // the same native display frame. A sub-frame tap survives until sampled.
 class Press {

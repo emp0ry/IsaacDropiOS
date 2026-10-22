@@ -16,6 +16,8 @@ namespace {
 constexpr const char *SupportedUUID = "F4357753-A25F-30EE-BACF-63709F902895";
 constexpr uintptr_t GameGlobal = 0xac3b90;
 constexpr uintptr_t IOSVTable = 0xa92d88;
+constexpr uintptr_t KeyboardVTable = 0xa94958;
+constexpr uintptr_t InputHub = 0xac5528;
 constexpr uintptr_t PressedOffset = 0x8a7fec;
 constexpr uintptr_t TriggeredOffset = 0x8a8098;
 constexpr uintptr_t ValueOffset = 0x8a8150;
@@ -42,6 +44,9 @@ static IsaacDrop::Press Gesture;
 // Two Itanium ABI prefix words (offset-to-top and RTTI), then 39 native methods.
 static std::array<uintptr_t,41> ShadowTable{};
 static uintptr_t HookedDevice = 0;
+static uintptr_t KeyboardBase = 0, KeyboardDevice = 0;
+static std::array<uintptr_t,41> KeyboardShadow{};
+static IsaacDrop::ShortDropPress KeyboardPress;
 
 static bool Read(uintptr_t address, void *bytes, size_t count) {
     vm_size_t copied = 0;
@@ -79,6 +84,17 @@ static bool SwitchCodeMatches(uintptr_t image) {
         MatchWords(image+InputBlockedOffset,{0x39470808,0x340001a8,0xb9573808}) &&
         MatchWords(image+RefreshActiveHUDOffset,{0x91096008,0x52800109,0xd109610a,0xf940014a}) &&
         MatchWords(image+SwapActiveSlotsOffset,{0xd10103ff,0xa9024ff4,0xa9037bfd,0x9100c3fd});
+}
+
+static bool KeyboardDropCodeMatches(uintptr_t image) {
+    // The manager keeps a conventional FP/LR pair and saves the player's x19
+    // at FP-8. Both its virtual pressed call and the separate short/hold callers
+    // must match before the bounded caller check can be used.
+    return SwitchCodeMatches(image) &&
+        MatchWords(image+0x52ad78,{0x52800161,0xaa1403e2,0xaa1303e3,0x94051bb6,0x34000840}) &&
+        MatchWords(image+0x52ae90,{0xf94002c0,0x52800161,0xaa1403e2,0xaa1303e3,0x94051b6f,0x52838608}) &&
+        MatchWords(image+0x8b64f8,{0xa9bc5ff8,0xa90157f6,0xa9024ff4,0xa9037bfd,0x9100c3fd}) &&
+        MatchWords(image+0x8b6530,{0xaa0003f4,0xf9400008,0xf9402508,0xaa1503e1,0xd63f0100});
 }
 
 static bool RestartCodeMatches(uintptr_t image) {
@@ -214,6 +230,66 @@ static float Value(void *device, int action) {
     return action == DropAction && Synthetic().pressed ? 1.f : original;
 }
 
+__attribute__((noinline)) static bool KeyboardPressed(void *device, int action) {
+    // DeviceKeyboard inherits the same verified action query as DeviceiOS.
+    auto native = reinterpret_cast<BoolQuery>(KeyboardBase+PressedOffset);
+    bool down = native(device,action);
+    if (action != DropAction || !NSThread.isMainThread ||
+        reinterpret_cast<uintptr_t>(device) != KeyboardDevice) return down;
+    if (!down) return KeyboardPress.Read(false,false);
+    uintptr_t player = IsaacDrop::ShortDropPlayer(KeyboardBase,
+        reinterpret_cast<uintptr_t>(__builtin_return_address(0)),
+        reinterpret_cast<uintptr_t>(__builtin_frame_address(0)),Read);
+    if (!player) return down;
+    uint32_t item = 0, controller = 0, deviceID = 0;
+    if (!Read(player+0x1964,&item,4) || !Read(player+0x19ec,&controller,4) ||
+        !Read(KeyboardDevice+8,&deviceID,4) || controller != deviceID) return down;
+    bool edge = KeyboardPress.Read(down,true);
+    // Do not change Jacob/Esau, Schoolbag or other native short-Drop behavior.
+    // The later long-hold query never matches this caller and sees raw down.
+    if (item != 489) return down;
+    return edge;
+}
+
+static bool InstallKeyboardDrop(uintptr_t image, const std::vector<Segment>& segments) {
+    Span devices{};
+    if (!Read(image+InputHub+8,&devices,sizeof(devices)) || !devices.begin || devices.begin%8 ||
+        devices.end < devices.begin || devices.capacity < devices.end ||
+        devices.capacity-devices.begin > 32*8 || (devices.end-devices.begin)%8) return false;
+    for (uintptr_t entry = devices.begin; entry < devices.end; entry += 8) {
+        uintptr_t device = 0, table = 0;
+        if (!Read(entry,&device,8) || !Read(device,&table,8)) continue;
+        if (device == KeyboardDevice && table == reinterpret_cast<uintptr_t>(KeyboardShadow.data()+2)) return true;
+        uintptr_t nativeTable = image+KeyboardVTable;
+        if (table != nativeTable || !Writable(device,8)) continue;
+        std::array<uintptr_t,41> original{};
+        uintptr_t typeName = 0;
+        char name[sizeof("N4KAGE5Input14DeviceKeyboardE")]{};
+        if (!Read(nativeTable-16,original.data(),sizeof(original)) || original[0] != 0 ||
+            !Read(original[1]+8,&typeName,8) || !Read(typeName,name,sizeof(name)) ||
+            strcmp(name,"N4KAGE5Input14DeviceKeyboardE") ||
+            original[2+9] != image+PressedOffset || original[2+10] != image+TriggeredOffset ||
+            original[2+11] != image+ValueOffset) return false;
+        for (size_t i = 2; i < original.size(); ++i) {
+            bool executable = false;
+            for (const auto& seg : segments)
+                if ((seg.protection & VM_PROT_EXECUTE) && original[i] >= seg.address &&
+                    original[i]-seg.address < seg.size) executable = true;
+            if (!executable) return false;
+        }
+        KeyboardBase = image; KeyboardDevice = device;
+        KeyboardShadow = original;
+        KeyboardShadow[2+9] = reinterpret_cast<uintptr_t>(&KeyboardPressed);
+        KeyboardPress = {};
+        uintptr_t expected = nativeTable;
+        if (!__atomic_compare_exchange_n(reinterpret_cast<uintptr_t *>(device),&expected,
+                reinterpret_cast<uintptr_t>(KeyboardShadow.data()+2),false,__ATOMIC_RELEASE,__ATOMIC_RELAXED)) return false;
+        ISDLog(@"D Infinity Ctrl single-press adapter installed; held Drop unchanged");
+        return true;
+    }
+    return false;
+}
+
 static bool ValidTouchDevice(uintptr_t address, uintptr_t nativeTable) {
     std::array<uint8_t,0xe0> bytes{};
     if (!Read(address,bytes.data(),bytes.size())) return false;
@@ -327,6 +403,7 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
     BOOL _switchReady;
     BOOL _restartReady;
     BOOL _pauseReady;
+    BOOL _keyboardDropReady;
     IsaacDrop::RestartHold _restartHold;
     BOOL _searching, _searchReady;
     uintptr_t _candidate;
@@ -348,9 +425,11 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
         _switchReady = SwitchCodeMatches(reinterpret_cast<uintptr_t>(_header));
         _restartReady = RestartCodeMatches(reinterpret_cast<uintptr_t>(_header));
         _pauseReady = PauseCodeMatches(reinterpret_cast<uintptr_t>(_header));
+        _keyboardDropReady = KeyboardDropCodeMatches(reinterpret_cast<uintptr_t>(_header));
         ISDLog(@"D Infinity touch-switch code validation %@",_switchReady ? @"passed" : @"rejected");
         ISDLog(@"native fresh-run restart code validation %@",_restartReady ? @"passed" : @"rejected");
         ISDLog(@"native pause/resume code validation %@",_pauseReady ? @"passed" : @"rejected");
+        ISDLog(@"D Infinity Ctrl single-press ABI validation %@",_keyboardDropReady ? @"passed" : @"rejected");
     }
     return self;
 }
@@ -359,6 +438,7 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
 - (BOOL)installWithDisplayLink:(CADisplayLink *)link {
     if (!self.supported || !NSThread.isMainThread) return NO;
     NativeLink = link;
+    if (_keyboardDropReady) InstallKeyboardDrop(reinterpret_cast<uintptr_t>(_header),_segments);
     if (_installed) {
         uintptr_t table = 0;
         if (Read(HookedDevice,&table,8) && table == reinterpret_cast<uintptr_t>(ShadowTable.data()+2)) return YES;

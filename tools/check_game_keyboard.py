@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only validation of the specific user-owned game keyboard binding."""
 import pathlib
+import re
 import struct
 import sys
 import uuid
@@ -32,3 +33,20 @@ assert struct.unpack_from('<i', data, hid_table+44*4)[0] == 32
 assert struct.unpack_from('<i', data, hid_table+40*4)[0] == -1
 assert struct.unpack_from('<i', data, hid_table+88*4)[0] == 335
 print('Game keyboard verified: supported UUID, native key handlers, HID Space 44 -> native Space 32')
+
+source = (pathlib.Path(__file__).resolve().parents[1] / 'src/ISDNativeInput.mm').read_text()
+ctrl = source.split('static bool KeyboardDropCodeMatches',1)[1].split('static bool RestartCodeMatches',1)[0]
+signatures = re.findall(r'MatchWords\(image\+(0x[0-9a-f]+),\{([^}]+)\}\)', ctrl)
+assert len(signatures) == 4
+for address, words in signatures:
+    expected = tuple(int(word,16) for word in words.split(','))
+    assert struct.unpack_from('<'+'I'*len(expected),data,file_offset(base+int(address,16))) == expected
+table = file_offset(base+0xa94958)
+methods = struct.unpack_from('<'+'Q'*39,data,table)
+assert tuple(word & 0xffffffff for word in methods[9:12]) == (0x8a7fec,0x8a8098,0x8a8150)
+assert all(0x4000 <= (word & 0xffffffff) < 0x904000 for word in methods)
+keyboard_name = b'N4KAGE5Input14DeviceKeyboardE\0'
+assert data[file_offset(base+0x95f479):][:len(keyboard_name)] == keyboard_name
+assert struct.unpack_from('<Q',data,table-16)[0] == 0
+assert struct.unpack_from('<Q',data,table-8)[0] & 0xffffffff == 0xa94a90
+print('Ctrl ABI verified: native short/hold callers, manager frame layout, keyboard RTTI and all 39 methods')

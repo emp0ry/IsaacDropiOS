@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+- Fix D Infinity repeatedly switching while physical Ctrl is held. Only its native short-Drop check becomes one switch per press; release and press again for the next die. The separate hold-to-drop check, other controls and the invisible touch zone keep their existing behavior.
+- Validate the exact native callers, stack layout and keyboard method table before enabling the adapter. Host regression and supported-binary checks pass. The user confirmed the fix working in PlayCover; separate physical iPhone testing remains pending.
+
 ## 0.3.1
 
 - Hide Planetarium Chance and the display-density Mini HUD overlay during native floor transitions, fades, boss introductions, death screens and cinematics. Both remain hidden on pause.
