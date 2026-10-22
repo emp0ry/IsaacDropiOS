@@ -82,5 +82,26 @@ class SourceTests(unittest.TestCase):
         self.assertIn("UIKeyboardHIDUsageKeyboardEscape", keys)
         self.assertIn("escapeHeld", keys)
 
+    def test_planetarium_native_read_only_floor_snapshot(self):
+        source = (ROOT / "src/ISDPlanetarium.mm").read_text()
+        self.assertIn("GetChance=0x6d03a4", source)
+        self.assertIn("(base+IsAvailable)(config,3)", source)
+        self.assertLess(source.index("if (!initial && _floor==floor) return YES"),
+                        source.index("_base+GetChance)(game)"))
+        self.assertIn("IsaacFixes.Planetarium.v1", source)
+        self.assertIn("_cache.count>=24", source)
+        self.assertIn("_lastNativeFrame==_nativeLink.timestamp", source)
+        self.assertIn("!IsaacFixes::PlanetariumUnpaused(pause)", source)
+        self.assertLess(source.index("!IsaacFixes::PlanetariumUnpaused(pause)"),
+                        source.index("_lastNativeFrame==_nativeLink.timestamp"))
+        self.assertLess(source.index("!IsaacFixes::PlanetariumUnpaused(pause)"),
+                        source.index("_popup.Advance()"))
+        self.assertIn("!Read(game+0x18+0x64,generation)", source)
+        self.assertIn("PlanetariumDogmaFlash", source)
+        self.assertIn("NoHUD(game)", source)
+        self.assertIn("roomType==16 && roomStage==35", source)
+        for forbidden in ("vm_write(", "MSHook", "RandomInt", "RandomFloat", "Isaac.Spawn", "makeKeyAndVisible"):
+            self.assertNotIn(forbidden, source)
+
 if __name__ == "__main__":
     unittest.main()

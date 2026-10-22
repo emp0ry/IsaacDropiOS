@@ -1,5 +1,17 @@
 # Device acceptance
 
+## Planetarium Chance checks
+
+Use a disposable, non-challenge Normal run with Planetariums unlocked. Enable Found HUD in the game's options. These commands change the test run; the HUD itself is read-only with respect to game state and RNG.
+
+1. On Basement I, the Planetarium icon and `1.0%` should appear below the deal-chance rows. Compare with the original Planetarium Chance mod on Windows. Check font, 50% opacity, spacing, hard/normal mode and HUD offset 0 / 1.
+2. Skip the Basement I treasure room and reach Basement II (`stage 2` may be used for a disposable console test). Expect `21.0%` and a temporary green `+20.0%`. Enter the treasure room: the current floor snapshot must not change. On the next floor it should reflect visits and modifiers.
+3. In a fresh run, enter the Basement I treasure room before advancing. Expect `1.0%` next floor, without a change popup. For item modifiers, give Magic 8 Ball (`giveitem c194`), Sausage (`giveitem c669`) or Crystal Ball (`giveitem c158`); check on the next floor, not immediately. Crystal Ball also has skipped-treasure-room behavior, so do not assume it is always just +15%.
+4. Exit to menu and Continue; repeat after a full app restart. The observed floor percentage should be retained, without a new delta popup. Test a new run, held-R restart, R Key (`giveitem c636`) and Forget Me Now (`giveitem c127`) separately; the last two preserve other run state and need same-stage regeneration coverage.
+5. Pause with the native pause button and with Esc: the icon, percentage and delta popup must disappear. Open Options and EID Items while paused; the row must remain hidden. Resume: the same percentage should return, with any unfinished popup continuing, not restarting. Repeat several times. Toggle Found HUD off/on. Check Greed (0%), an account without Planetariums unlocked (0%), Ascent (0%), and the NO HUD seed (hidden). Check Bethany/Tainted Bethany, Jacob & Esau, true co-op and Duality (`giveitem c498`) for overlap. Character changes must move the row without changing this floor's chance.
+6. Confirm hiding during transitions, loss of native HUD visibility and the Beast arena. Compare the end of Dogma's death animation against the original: the row should disappear after animation frame 80 and stay hidden over the flash. Report any remaining visible row over it.
+7. Check Mini HUD, EID, Steam Sync, Console, Drop, R, Esc, Enter and F still work. A successful compile/ABI log is not visual acceptance. Expected log: `Planetarium native getter/HUD ABI validation passed`, followed by one `Planetarium floor snapshot` per floor, not per room/item.
+
 Restart Isaac after replacing/installing the mod. Use a disposable run: console
 commands and the native Drop action change gameplay. Installation itself does
 not change saves. The control is intentionally invisible.
@@ -51,7 +63,7 @@ Press Esc in an active run to pause, hold it to confirm it does not toggle again
 then release and press once to resume. Check the native pause animation, music,
 R-loop cancellation, and typing in Console/Steam fields without changing pause.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.2.0 ready`,
+Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.3.0 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
 `native fresh-run restart code validation passed`, and
 `native fresh-run restart queued; 1-second repeat while held`. With D Infinity

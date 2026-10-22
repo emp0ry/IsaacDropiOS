@@ -1,6 +1,6 @@
 # Isaac Fixes for iOS
 
-Small native control and HUD fixes for The Binding of Isaac: Repentance on iPhone and in PlayCover. Previously **Isaac Drop (Ctrl)**. One mod includes Drop, restart, pause, Enter/Space, Mac fullscreen, and sharper Mini Extra HUD icons.
+Small native control and HUD fixes for The Binding of Isaac: Repentance on iPhone and in PlayCover. Previously **Isaac Drop (Ctrl)**. One mod includes Drop, restart, pause, Enter/Space, Mac fullscreen, sharper Mini Extra HUD icons, and Planetarium Chance.
 
 [Website](https://isaacfixesios.emp0ry.com/) · [Downloads](https://github.com/emp0ry/IsaacFixesiOS/releases/latest) · [Changelog](CHANGELOG.md) · [Report a bug](https://github.com/emp0ry/IsaacFixesiOS/issues)
 
@@ -28,6 +28,14 @@ Normal text fields, Debug Console input, dialogs, and modified keyboard shortcut
 Enable **Extra HUD: Mini** in the game's own options. The mod displays the original 32x32 item art directly at screen resolution in the same compact cells, avoiding the game's intermediate reduction to 16x16. No smoothing or global filter is enabled. It reads icons from your installed game; no game art is included in the download.
 
 Normal HUD, paused menus, procedural/special-shader icons, missing art, and cells smaller than 32 physical pixels keep the native renderer. Confirmed working in PlayCover; physical iPhone testing remains separate.
+
+## Planetarium Chance
+
+Adds a Planetarium percentage to Found HUD, following the Repentance behavior of [Planetarium Chance by Peachee/Sectimus](https://github.com/Sectimus/isaac-planetarium-chance). The original game icon and LuaMiniOutlined bitmap font are read from your own installation, at 50% opacity. The row follows HUD offset, difficulty, character counters and Duality. A changed floor percentage briefly shows a green increase or red decrease.
+
+The percentage comes from Isaac's native chance getter and is captured per floor, not continuously recalculated after entering a treasure room or collecting an item. Unlock/run restrictions are checked without spawning entities or consuming RNG. Pause menus, Found HUD off, HUD-invisible states, NO HUD seeds, transitions and the Beast arena hide the row. Resuming restores the same percentage; any change popup is frozen while paused. Greed retains a 0% row. A bounded mod-only preferences cache preserves observed floor snapshots across Continue; it does not edit Isaac saves or Steam Cloud.
+
+Dogma's death flash also hides the row after animation frame 80, like the original. Confirmed working in PlayCover. Host logic and supported-binary checks pass; separate physical iPhone coverage, unusual co-op setups and cutscene timing still need acceptance testing.
 
 ## Downloads
 

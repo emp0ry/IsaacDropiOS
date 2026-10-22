@@ -5,6 +5,7 @@
 #import "IESKeyboard.h"
 #import "IESInputContext.h"
 #import "ISDMiniHUD.h"
+#import "ISDPlanetarium.h"
 #import <UIKit/UIKit.h>
 
 @interface ISDZone : UIControl
@@ -47,6 +48,7 @@ static BOOL EditingText(UIView *view) {
 @property(nonatomic, strong) IESKeyboard *enterKey;
 @property(nonatomic, strong) ISDFullscreen *fullscreen;
 @property(nonatomic, strong) ISDMiniHUD *miniHUD;
+@property(nonatomic, strong) ISDPlanetarium *planetarium;
 @property(nonatomic, strong) NSTimer *timer;
 @property(nonatomic) BOOL loggedStartup;
 @end
@@ -56,6 +58,7 @@ static BOOL EditingText(UIView *view) {
     UIWindow *window = ISDReadyWindow(&link);
     if (!window) {
         [self.miniHUD suspend];
+        [self.planetarium suspend];
         self.zone.hidden = YES;
         UIWindow *previousWindow = self.restartZone.window;
         if (previousWindow && [self.input restartTransitionPending] &&
@@ -72,6 +75,8 @@ static BOOL EditingText(UIView *view) {
     }
     if (!self.miniHUD) self.miniHUD = [ISDMiniHUD new];
     [self.miniHUD tickWithWindow:window displayLink:link];
+    if (!self.planetarium) self.planetarium = [ISDPlanetarium new];
+    [self.planetarium tickWithWindow:window displayLink:link];
     if (!self.input) self.input = [ISDNativeInput new];
     if (!self.input.supported) { self.zone.hidden = YES; self.restartZone.hidden = YES; return; }
     if (![self.input installWithDisplayLink:link]) {
@@ -113,7 +118,7 @@ static BOOL EditingText(UIView *view) {
     // reorder them: settings/console dialogs must keep their established input.
     if (!self.loggedStartup) {
         self.loggedStartup = YES;
-        ISDLog(@"IsaacFixes 0.2.1 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD");
+        ISDLog(@"IsaacFixes 0.3.0 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD, Planetarium Chance");
     }
 }
 - (BOOL)keyboardAvailable {
@@ -122,6 +127,7 @@ static BOOL EditingText(UIView *view) {
 }
 - (void)suspend {
     [self.miniHUD suspend];
+    [self.planetarium suspend];
     self.zone.hidden = YES; self.restartZone.hidden = YES;
     [self.input cancel]; [self.enterKey suspend];
 }

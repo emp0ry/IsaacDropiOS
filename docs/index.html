@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#120b24">
-  <meta name="description" content="Isaac Fixes combines invisible Drop/Ctrl, repeating R restart, Esc pause, Enter/Space confirmation and F fullscreen for Isaac iOS and PlayCover.">
+  <meta name="description" content="Isaac Fixes combines native controls, sharper Mini HUD icons and Planetarium Chance for Isaac iOS and PlayCover.">
   <meta name="author" content="emp0ry">
   <meta name="robots" content="index, follow">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -45,7 +45,7 @@
       <div class="container hero-copy">
         <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Repentance on iOS · One native mod · iPhone + PlayCover</div>
         <h1>Small fixes.<br><span>Native controls.</span></h1>
-        <p class="hero-text">The controls Isaac’s iOS version leaves out, together in one mod. Drop and switch D Infinity, hold R to restart, and press Esc to pause. In PlayCover, Enter confirms like Space and F toggles fullscreen. Sharper Mini HUD item icons, with no extra buttons on your screen.</p>
+        <p class="hero-text">The controls Isaac’s iOS version leaves out, together in one mod. Drop and switch D Infinity, hold R to restart, and press Esc to pause. In PlayCover, Enter confirms like Space and F toggles fullscreen. Sharper Mini HUD icons and Planetarium Chance, with no extra buttons on your screen.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#downloads">Download Latest <span aria-hidden="true">↓</span></a>
           <a class="button button-secondary" href="#controls">Explore the controls</a>
@@ -81,13 +81,14 @@
         <aside class="notice"><strong>Esc to pause. Esc again to resume.</strong><p>Works with hardware keyboards and PlayCover. One toggle per press, even when held. Text entry, presented dialogs and modified shortcuts are left alone. Pausing cancels any held-R loop.</p></aside>
         <div class="gesture-grid"><article class="gesture"><span class="gesture-number">PLAYCOVER / ENTER</span><h3>Enter does what Space does</h3><p>Confirm the selected pause-menu option: Continue resumes the run; Options opens Options. Ordinary and keypad Enter use the game’s own Space input. Debug Console text entry stays normal.</p></article><article class="gesture"><span class="gesture-number">PLAYCOVER / F</span><h3>Fullscreen. And back.</h3><p>Press F to enter native macOS fullscreen; release and press again to return to windowed mode. Holding F toggles once, and presses during the native animation do not queue extra transitions. Text fields and modified shortcuts are left alone.</p></article></div>
         <aside class="notice"><strong>Focused fixes, native rules.</strong><p>D Infinity cycling is supported. Other short-press Ctrl behaviors are not yet fully supported by the iOS touch path. Sliding out, pausing or backgrounding cancels the held input.</p></aside>
+        <aside class="notice"><strong>Planetarium Chance, in Found HUD.</strong><p>The original game icon and bitmap font show the current floor’s percentage at 50% opacity, with green or red changes between floors. Uses Isaac’s native chance calculation without consuming RNG or editing saves. Hidden while paused; resumes with the same value. Follows HUD offset, difficulty, character counters and Duality.</p></aside>
       </div>
     </section>
 
     <section class="section downloads" id="downloads">
       <div class="container">
         <div class="section-head"><span class="section-kicker">Downloads</span><h2>Choose your installation.</h2><p>The same native ARM64 code, packaged for your setup. Use only one loading method per Isaac installation.</p></div>
-        <p class="download-status" data-release-status role="status">Isaac Fixes v0.2.1 · Release files on GitHub</p>
+        <p class="download-status" data-release-status role="status">Isaac Fixes v0.3.0 · Release files on GitHub</p>
         <div class="download-grid">
           <article class="download-card"><div class="download-card-head"><span>ROOTLESS</span><span>DEB</span></div><h3>Jailbroken devices</h3><p>ElleKit injection package for the installed native game. No extra mod is required.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-rootless.deb" data-asset="IsaacFixes-rootless.deb">Download DEB ↓</a></article>
           <article class="download-card"><div class="download-card-head"><span>LIVECONTAINER</span><span>ZIP</span></div><h3>App-specific framework</h3><p>Import the framework archive into Isaac’s own tweak folder, not the shared global folder.</p><a class="button button-secondary" href="https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-LiveContainer.framework.zip" data-asset="IsaacFixes-LiveContainer.framework.zip">Download framework ↓</a></article>
@@ -128,6 +129,6 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><a class="brand" href="#top">Isaac Fixes <span class="footer-version" data-version>v0.2.1</span></a><p>Independent, unofficial mod by emp0ry. Not affiliated with Nicalis.</p><small>© <span data-year>2026</span> emp0ry · MIT license</small></div><nav aria-label="Related projects"><a href="https://isaaceidios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac EID ↗</a><a href="https://isaacsteamios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac Steam Sync ↗</a><a href="https://github.com/emp0ry/IsaacFixesiOS" target="_blank" rel="noopener noreferrer">Source & issues ↗</a></nav></div></footer>
+  <footer class="site-footer"><div class="container footer-grid"><div><a class="brand" href="#top">Isaac Fixes <span class="footer-version" data-version>v0.3.0</span></a><p>Independent, unofficial mod by emp0ry. Not affiliated with Nicalis.</p><small>© <span data-year>2026</span> emp0ry · MIT license</small></div><nav aria-label="Related projects"><a href="https://isaaceidios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac EID ↗</a><a href="https://isaacsteamios.emp0ry.com/" target="_blank" rel="noopener noreferrer">Isaac Steam Sync ↗</a><a href="https://github.com/emp0ry/IsaacFixesiOS" target="_blank" rel="noopener noreferrer">Source & issues ↗</a></nav></div></footer>
 </body>
 </html>

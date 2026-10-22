@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Add a native Planetarium Chance HUD row following the original Repentance mod: game-owned icon/font, 50% alpha, per-floor native chance snapshots, HUD offset and character/Duality positioning, and green/red change popups.
+- Read unlock/run eligibility and the game's actual chance without advancing RNG, spawning a probe entity or editing saves. Keep observed floor snapshots in a bounded mod-only preferences cache for Continue.
+- Hide the entire Planetarium row, including its change popup, while paused. Resume the same floor percentage and popup afterward without recalculating the chance.
+- Hide with Found HUD disabled, native HUD invisibility, NO HUD seeds, transitions, the Beast arena and Dogma's death flash after frame 80. Greed keeps a 0% row.
+- The user confirmed Planetarium Chance working in PlayCover. Host checks cover pause visibility, layout, chance gating, popup animation and the bounded bitmap-font parser; supported-binary getter/availability/HUD ABI checks and package/signature audits passed. Separate physical iPhone, unusual co-op and cutscene timing coverage remains pending.
+
 ## 0.2.1
 
 - Withdraw the experimental Mini HUD linear minification change after in-game feedback: it blurred icons shortly after switching to Mini. No native sampler or GL state is changed by the replacement build.

@@ -7,7 +7,7 @@
 <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
 <key>CFBundleName</key><string>Isaac Fixes</string>
 <key>CFBundlePackageType</key><string>FMWK</string>
-    <key>CFBundleShortVersionString</key><string>0.2.1</string>
-    <key>CFBundleVersion</key><string>6</string>
+    <key>CFBundleShortVersionString</key><string>0.3.0</string>
+    <key>CFBundleVersion</key><string>7</string>
 <key>MinimumOSVersion</key><string>15.0</string>
 </dict></plist>
