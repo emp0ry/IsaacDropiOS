@@ -1,8 +1,8 @@
 Package: com.emp0ry.isaacdrop
-Name: Isaac Drop (Ctrl)
-Version: 0.1.3
+Name: Isaac Fixes
+Version: 0.2.0
 Architecture: iphoneos-arm64
-Description: Invisible native Drop and repeating Restart controls for Isaac Repentance on iOS.
+Description: Drop, repeating restart, Escape pause, Enter/Space and PlayCover fullscreen fixes for Isaac iOS.
 Maintainer: emp0ry
 Author: emp0ry
 Section: Tweaks

@@ -18,11 +18,14 @@
 @interface ISDRestartKey ()
 @property(nonatomic, copy) BOOL (^handler)(BOOL down);
 @property(nonatomic, copy) BOOL (^escapeHandler)(void);
+@property(nonatomic, copy) BOOL (^fullscreenHandler)(void);
 @property(nonatomic, strong) id desktopMonitor;
 @property(nonatomic) BOOL keyHeld;
 @property(nonatomic) BOOL consumed;
 @property(nonatomic) BOOL escapeHeld;
 @property(nonatomic) BOOL escapeConsumed;
+@property(nonatomic) BOOL fullscreenHeld;
+@property(nonatomic) BOOL fullscreenConsumed;
 - (BOOL)handleEvent:(UIEvent *)event;
 @end
 static __weak ISDRestartKey *Key;
@@ -39,6 +42,24 @@ static void SendEvent(id app, SEL selector, UIEvent *event) {
 - (instancetype)initWithHandler:(BOOL (^)(BOOL))handler escapeHandler:(BOOL (^)(void))escapeHandler {
     if ((self = [self initWithHandler:handler])) _escapeHandler = [escapeHandler copy];
     return self;
+}
+- (instancetype)initWithHandler:(BOOL (^)(BOOL))handler escapeHandler:(BOOL (^)(void))escapeHandler
+    fullscreenHandler:(BOOL (^)(void))fullscreenHandler {
+    if ((self = [self initWithHandler:handler escapeHandler:escapeHandler])) _fullscreenHandler = [fullscreenHandler copy];
+    return self;
+}
+- (BOOL)fullscreenDown:(BOOL)down repeat:(BOOL)repeat modified:(BOOL)modified {
+    if (!down) {
+        BOOL handled = self.fullscreenConsumed;
+        self.fullscreenHeld = NO; self.fullscreenConsumed = NO;
+        return handled;
+    }
+    if (self.fullscreenHeld) return self.fullscreenConsumed;
+    self.fullscreenHeld = YES;
+    self.fullscreenConsumed = !repeat && !modified &&
+        UIApplication.sharedApplication.applicationState == UIApplicationStateActive &&
+        self.fullscreenHandler && self.fullscreenHandler();
+    return self.fullscreenConsumed;
 }
 - (BOOL)escapeDown:(BOOL)down repeat:(BOOL)repeat modified:(BOOL)modified {
     if (!down) {
@@ -78,12 +99,14 @@ static void SendEvent(id app, SEL selector, UIEvent *event) {
     for (UIPress *press in ((UIPressesEvent *)event).allPresses) {
         UIKey *key = press.key;
         BOOL escape = key && key.keyCode == UIKeyboardHIDUsageKeyboardEscape;
-        if (!key || (!escape && key.keyCode != UIKeyboardHIDUsageKeyboardR)) { allHandled = NO; continue; }
+        BOOL fullscreen = key && key.keyCode == UIKeyboardHIDUsageKeyboardF;
+        if (!key || (!escape && !fullscreen && key.keyCode != UIKeyboardHIDUsageKeyboardR)) { allHandled = NO; continue; }
         BOOL up = press.phase == UIPressPhaseEnded || press.phase == UIPressPhaseCancelled;
         UIKeyModifierFlags mask = UIKeyModifierShift|UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierCommand;
-        BOOL handled = escape ? self.escapeConsumed : self.consumed;
+        BOOL handled = fullscreen ? self.fullscreenConsumed : escape ? self.escapeConsumed : self.consumed;
         if (press.phase == UIPressPhaseBegan || up) {
-            handled = escape ? [self escapeDown:!up repeat:NO modified:!up && (key.modifierFlags & mask)]
+            handled = fullscreen ? [self fullscreenDown:!up repeat:NO modified:!up && (key.modifierFlags & mask)]
+                : escape ? [self escapeDown:!up repeat:NO modified:!up && (key.modifierFlags & mask)]
                 : [self down:!up repeat:NO modified:!up && (key.modifierFlags & mask)];
         }
         if (!handled) allHandled = NO;
@@ -118,14 +141,16 @@ static void SendEvent(id app, SEL selector, UIEvent *event) {
                 ISDRestartKey *target = weakSelf;
                 NSUInteger mask = (1UL<<17)|(1UL<<18)|(1UL<<19)|(1UL<<20);
                 if (event.type == 12) { if (event.modifierFlags & mask) [target suspend]; return event; }
-                if (!target || (event.keyCode != 15 && event.keyCode != 53)) return event;
+                if (!target || (event.keyCode != 15 && event.keyCode != 53 && event.keyCode != 3)) return event;
+                if (event.keyCode == 3) return [target fullscreenDown:event.type != 11 repeat:event.isARepeat
+                    modified:(event.modifierFlags & mask) != 0] ? nil : event;
                 if (event.keyCode == 53) return [target escapeDown:event.type != 11 repeat:event.isARepeat
                     modified:(event.modifierFlags & mask) != 0] ? nil : event;
                 return [target down:event.type != 11 repeat:event.isARepeat
                     modified:(event.modifierFlags & mask) != 0] ? nil : event;
             }];
     }
-    ISDLog(@"hold-R and Escape input installed (%@)",self.desktopMonitor ? @"UIKit + PlayCover" : @"UIKit");
+    ISDLog(@"R, Escape and F input installed (%@)",self.desktopMonitor ? @"UIKit + PlayCover" : @"UIKit");
 }
 - (void)dealloc {
     [NSNotificationCenter.defaultCenter removeObserver:self];

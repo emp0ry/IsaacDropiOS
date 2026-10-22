@@ -1,154 +1,75 @@
-# Isaac Drop (Ctrl) for iOS
+# Isaac Fixes for iOS
 
-A separate native input mod for The Binding of Isaac: Repentance on iOS.
-It does not require or modify External Item Descriptions, Steam Sync, or Debug
-Console. They can remain installed independently.
+Small native control fixes for The Binding of Isaac: Repentance on iPhone and in PlayCover. Previously **Isaac Drop (Ctrl)**. One mod now includes Drop, restart, pause, Enter/Space, and Mac fullscreen controls.
 
-[Website](https://isaacctrlios.emp0ry.com/) ·
-[Downloads](https://github.com/emp0ry/IsaacDropiOS/releases/latest) ·
-[Report a bug](https://github.com/emp0ry/IsaacDropiOS/issues)
-
-## Downloads
-
-| Your setup | Release file |
-| --- | --- |
-| Rootless jailbreak / ElleKit | [IsaacDrop-rootless.deb](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-rootless.deb) |
-| LiveContainer app-specific tweaks | [IsaacDrop-LiveContainer.framework.zip](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-LiveContainer.framework.zip) |
-| Direct embedding | [IsaacDrop-Embedded.zip](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-Embedded.zip) |
-| Standalone ARM64 library | [IsaacDrop.dylib](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop.dylib) |
-| PlayCover on Apple silicon | [IsaacDrop-PlayCover.dylib](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/IsaacDrop-PlayCover.dylib) |
-
-Use one loading method, then fully restart Isaac. Check release files against
-[SHA256SUMS](https://github.com/emp0ry/IsaacDropiOS/releases/latest/download/SHA256SUMS).
+[Website](https://isaacfixesios.emp0ry.com/) · [Downloads](https://github.com/emp0ry/IsaacFixesiOS/releases/latest) · [Changelog](CHANGELOG.md) · [Report a bug](https://github.com/emp0ry/IsaacFixesiOS/issues)
 
 ## Controls
 
-The **bottom-left 72 x 64 screen points** are an invisible Drop control during
-an unpaused run. The zone ends at the actual screen edge, not the game HUD edge.
+| Control | Action | Where |
+| --- | --- | --- |
+| Bottom-left invisible zone: tap | Switch D Infinity to the next die without using it or spending charge | iPhone / PlayCover |
+| Bottom-left invisible zone: hold | Native Drop for eligible trinkets, cards, runes, and pills; no trinket required | iPhone / PlayCover |
+| Hold R, or hold the top-center invisible zone | Fresh run after 1 second; repeat every second until released | Hardware keyboard / touch |
+| Esc | Native pause/resume, one toggle per press | Hardware keyboard / PlayCover |
+| Enter / keypad Enter | Same native input as Space, including confirming the selected pause-menu entry | PlayCover |
+| F | Toggle native macOS fullscreen on/off, one toggle per press | PlayCover |
 
-- **Tap:** advance D Infinity by one die. Holding starts with the same single
-  switch; it does not repeatedly cycle. Other short-press Ctrl behaviors are
-  not yet fully supported by the iOS touch-control path.
-- **Hold:** keep native Drop pressed for the game's normal drop threshold,
-  usually a few seconds, to drop eligible trinkets and pocket items. A trinket
-  is not required to press the control.
-- Sliding out cancels. Pause, menus, backgrounding and loss of the game host
-  release input. A ten-second watchdog prevents a lost touch-end from sticking.
+The two touch zones are **72 x 64 screen points**, invisible, and enabled only during an unpaused run. Sliding out, pausing, backgrounding, or losing the game host cancels held input.
 
-No text, icon, outline, highlight, or extra window is drawn. Only the two small
-control zones receive touches; the game retains the rest of the screen. The Drop
-control uses the shared native action, not a separate delete-card command:
-native rules and restrictions still apply.
+Restart follows the game's normal character, difficulty, seed, and Eden-token rules. This is not the R Key item and does not keep acquired items. Slow loading can lengthen the repeat interval; restart requests do not pile up.
 
-### Restart (R)
+Enter on **Continue** resumes; Enter on **Options** opens Options. It is not a forced pause toggle or a direct active-item call. The physical Space key still works. F uses macOS's native fullscreen transition and returns to windowed mode when pressed again.
 
-- Hold **R** on a hardware keyboard, or hold the invisible **top-center
-  72 x 64 point** zone, for **1 second** to start a fresh run. Keep holding to
-  restart repeatedly at **1-second intervals**; release to stop.
-- A short press does nothing. Releasing, sliding out, pausing, opening text
-  entry, losing focus or suspending the game cancels an unfinished hold.
-- The native restart queue retains the character, difficulty and native seed
-  rules. This is not the R Key collectible: acquired items are not retained.
-- Repeats wait for the previous native restart to finish; a slow load can make
-  an interval longer, but requests never pile up. The keyboard shortcut uses the
-  physical R key in PlayCover, including with a non-English keyboard layout.
-- Native restrictions still apply, including Eden token checks. Menus, paused
-  runs, transitions and text fields do not accept the shortcut.
+Normal text fields, Debug Console input, dialogs, and modified keyboard shortcuts are left alone. D Infinity cycling and hold-to-drop are supported; other short-press Ctrl behaviors are not yet fully supported by the iOS touch path.
 
-The initial native restart was confirmed in PlayCover. The repeating-hold
-update has host tests and still needs gameplay confirmation. It does not replace
-or disable the bottom-left Drop control or the other installed mods.
+## Downloads
 
-### Pause (Esc)
+| Setup | File |
+| --- | --- |
+| Rootless jailbreak / ElleKit | [IsaacFixes-rootless.deb](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-rootless.deb) |
+| LiveContainer app-specific tweaks | [IsaacFixes-LiveContainer.framework.zip](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-LiveContainer.framework.zip) |
+| Direct iOS embedding | [IsaacFixes-Embedded.zip](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-Embedded.zip) |
+| Standalone iPhone ARM64 library | [IsaacFixes.dylib](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes.dylib) |
+| PlayCover on Apple Silicon | [IsaacFixes-PlayCover.dylib](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/IsaacFixes-PlayCover.dylib) |
 
-Press **Esc** to open the native pause menu; press it again to resume. Holding
-Esc toggles only once. This supports UIKit hardware keyboards and PlayCover.
-It cancels any held-R loop and leaves text entry, dialogs, menus and modifier
-shortcuts alone. It uses the game's pause animations and audio-resume path,
-not a raw write to the pause-state field. Escape gameplay verification is pending.
+Use one loading method and one copy only, then fully restart Isaac. Verify downloads with [SHA256SUMS](https://github.com/emp0ry/IsaacFixesiOS/releases/latest/download/SHA256SUMS).
 
-## Installation
+## Install or update
 
-- **Rootless jailbreak:** install `packages/IsaacDrop-rootless.deb` with ElleKit.
-- **LiveContainer:** import `packages/IsaacDrop-LiveContainer.framework.zip` into
-  Isaac's app-specific tweak folder, then fully restart Isaac.
-- **Embedded app:** normally sign and embed `IsaacDrop.dylib` inside the app,
-  for example using `@executable_path/Frameworks/IsaacDrop.dylib` as its load path.
-  The embedded archive contains no game or resource database.
-- **PlayCover:** use `IsaacDrop-PlayCover.dylib`, the Mac Catalyst build, instead
-  of the iPhone library. Embed it using your existing signed-app workflow and
-  preserve the app's entitlements and other mods. To replace an existing Drop
-  installation, keep its load path and replace just its library. Fully restart
-  Isaac afterward. This is for the iOS game in PlayCover, not native macOS Isaac.
+- **Rootless jailbreak:** install the DEB with your package manager. Its package identity is retained so it upgrades the old Isaac Drop package.
+- **LiveContainer:** replace the old Drop framework with the new app-specific framework. Do not keep both copies enabled.
+- **Embedded iOS app:** embed `IsaacFixes.dylib`, normally at `@executable_path/Frameworks/IsaacFixes.dylib`, and sign the complete app.
+- **PlayCover:** use `IsaacFixes-PlayCover.dylib`, not the iPhone dylib. Embed it as `IsaacFixes.dylib` and re-sign with the existing app entitlements. Keep EID, Steam Sync, Debug Console, and other independent mods intact.
 
-Use one loading method per installation. The dylib has no jailbreak dependency.
-ElleKit is needed only for the optional jailbreak loader package. No JIT or
-writable executable memory is requested.
+When replacing an existing embedded Drop installation, you can keep its current `IsaacDrop.dylib` load path and replace that file with the new build. Alternatively, update the load path to `IsaacFixes.dylib`. **Do not load both old and new copies.** Remove the separate experimental `IsaacEnterSpace.dylib` load command if you installed it; Enter is now included here.
 
-## Compatibility
+Back up your app before changing its embedded libraries. Fully restart Isaac after installation. No IPA, game executable, extracted game assets, or save files are distributed.
 
-Targets native Isaac iOS **1.4 / Repentance 1.7.9b.J754**, ARM64 UUID
-`F4357753-A25F-30EE-BACF-63709F902895`. Unknown binaries fail closed.
+## Compatibility and limits
 
-The native touch device's Drop pressed/triggered/value queries use a private
-copy of its complete method table and RTTI. Only that validated writable input
-object's table pointer changes. Protected original tables remain untouched.
-No page-protection changes, instruction patching, native
-item removal, active-item invocation, save editing, or injected UITouch is used.
-Except for accepted R/Esc shortcuts, physical input and other actions pass through
-unchanged. A foreign hook in these exact slots is rejected rather than overwritten. The mod disables
-itself if table, object, or executable validation fails.
+- Isaac iOS **1.4 / Repentance 1.7.9b.J754**, ARM64, iOS 15 or newer.
+- PlayCover supports the iOS game, not the native Windows/macOS Isaac executable.
+- Unknown game binaries and incompatible native handlers are rejected.
+- Independent of EID, Steam Sync, and Debug Console; no configuration panel or account required.
+- Apple system libraries only in the dylib. ElleKit is needed only for the optional jailbreak loader package. No JIT, writable executable memory, global key injection, or save editing.
 
-Tap edge state follows the existing native display link timestamp, keeping
-multiple queries in one game frame consistent. Short taps are retained until
-sampled. Startup waits for the real guest render view and advancing native
-frames, including LiveContainer; it does not force controller/view loading.
-One bounded, read-only background scan locates the randomized native touch
-object. The main thread revalidates it before attaching the private method table;
-no full-process scan runs in the game render loop.
+The Drop adapter preserves the native input object's full method table and RTTI in a private writable copy. The Enter alias uses validated native keyboard handlers. R and Esc use verified native game paths; F uses the owning Mac window's public fullscreen API. Startup waits for the existing render view and advancing game frames, without forcing a view load or creating another game window.
 
-### D Infinity on touch controls
+## Build and check
 
-The iOS controller has a separate native input branch which skips the keyboard's
-D Infinity switch logic. Version 0.1.1 therefore applies that verified mode
-transition once per touch-down to the touch-controlled player's main active
-slot. It validates the executable UUID, native instructions, player/controller,
-input restrictions, writable state and the current mode (0–9), then changes only
-the 16-bit mode and calls the game's native HUD refresh. It neither uses the die
-nor spends charge. On D100 → D1 it also preserves the native Schoolbag slot swap.
-Keyboard/gamepad players are excluded to avoid double switching. The hold-to-drop
-input adapter is unchanged; unsupported binaries never receive this state write.
-
-## Build and tests
-
-On macOS with Xcode and an iPhoneOS SDK, Python 3, Node.js, ripgrep and dpkg:
+With macOS, Xcode, an iPhoneOS SDK, Python 3, Node.js, ripgrep, and dpkg:
 
 ```sh
 make release
 ```
 
-Outputs: iPhone and PlayCover ARM64 dylibs, rootless deb, LiveContainer framework,
-embedded zip, and checksums in `dist/`. Host checks cover Drop, repeating restart
-timing, loading transitions, cancellation and keyboard-hook chaining. See
-[device checks](docs/TESTING.md) for gameplay acceptance.
-Diagnostic log: `Library/Application Support/IsaacDrop/drop.log` inside Isaac's
-own sandbox. No account credentials or saves are logged.
+Downloads and checksums are generated in `dist/`. Host checks cover Drop, restart timing, R/Esc/F routing, Enter/Space menu input, text-field guards, and fullscreen transitions. They do not replace gameplay/device testing. The release notes distinguish newly added functionality from device-confirmed behavior.
 
-Native hold-to-drop was confirmed on the development iPhone. The D Infinity
-switching fix has build and policy-test coverage; gameplay confirmation of that
-new adapter and the full loading-mode matrix is still pending.
+[Device checklist](docs/TESTING.md). Diagnostic log inside Isaac's sandbox: `Library/Application Support/IsaacFixes/fixes.log`.
 
 ## Website and releases
 
-`docs/` is a buildless HTML/CSS/JavaScript site published with GitHub Pages from
-`main:/docs`. Its custom domain is declared in `docs/CNAME`. There are no site
-dependencies, analytics or account requirements. The small die-sequence demo is
-an illustration, not remote game control. Download links work without JavaScript;
-when available, GitHub's public API adds current release metadata.
+`docs/` is a buildless HTML/CSS/JavaScript site served from `main:/docs` through GitHub Pages. Its custom domain is `isaacfixesios.emp0ry.com`; DNS is managed separately. Tagging the version from `package/control` builds the packages and publishes the matching section of [CHANGELOG.md](CHANGELOG.md), without repeating the release title in its body.
 
-One workflow, `.github/workflows/release.yml`, runs the tests, builds all package
-formats and audits signatures/dependencies. A matching `v*` tag also publishes the
-verified files with `docs/RELEASE_NOTES_v<version>.md` and SHA-256 checksums.
-
-This is an independent, unofficial mod. No Isaac IPA, extracted game assets or
-purchase bypass is included. Source: MIT license, copyright emp0ry.
+Independent, unofficial software by emp0ry. Not affiliated with Nicalis. MIT license.

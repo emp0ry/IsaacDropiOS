@@ -2,7 +2,7 @@ from pathlib import Path
 import plistlib
 import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 class SourceTests(unittest.TestCase):
     def test_touch_zone(self):
@@ -64,9 +64,9 @@ class SourceTests(unittest.TestCase):
 
     def test_packages(self):
         info = plistlib.loads((ROOT / "livecontainer/Info.plist").read_bytes())
-        self.assertEqual(info["CFBundleShortVersionString"], "0.1.3")
-        self.assertEqual(info["CFBundleExecutable"], "IsaacDrop")
-        filt = plistlib.loads((ROOT / "package/IsaacDrop.plist").read_bytes())
+        self.assertEqual(info["CFBundleShortVersionString"], "0.2.0")
+        self.assertEqual(info["CFBundleExecutable"], "IsaacFixes")
+        filt = plistlib.loads((ROOT / "package/IsaacFixes.plist").read_bytes())
         self.assertEqual(filt["Filter"]["Bundles"], ["com.Nicalis.Isaac-iOS"])
 
     def test_escape_native_menu(self):

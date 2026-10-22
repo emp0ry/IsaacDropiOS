@@ -6,7 +6,7 @@ import re
 import unittest
 import xml.etree.ElementTree as ET
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 
 
@@ -37,16 +37,16 @@ class WebsiteTests(unittest.TestCase):
             elif not urlparse(link).scheme:
                 self.assertTrue((DOCS / link).is_file(), link)
         self.assertEqual(set(page.assets), {
-            "IsaacDrop.dylib", "IsaacDrop-rootless.deb",
-            "IsaacDrop-LiveContainer.framework.zip", "IsaacDrop-Embedded.zip",
-            "IsaacDrop-PlayCover.dylib",
+            "IsaacFixes.dylib", "IsaacFixes-rootless.deb",
+            "IsaacFixes-LiveContainer.framework.zip", "IsaacFixes-Embedded.zip",
+            "IsaacFixes-PlayCover.dylib",
             "SHA256SUMS",
         })
 
     def test_domain_and_compatibility(self):
         text = (DOCS / "index.html").read_text()
-        self.assertEqual((DOCS / "CNAME").read_text().strip(), "isaacctrlios.emp0ry.com")
-        self.assertIn('rel="canonical" href="https://isaacctrlios.emp0ry.com/"', text)
+        self.assertEqual((DOCS / "CNAME").read_text().strip(), "isaacfixesios.emp0ry.com")
+        self.assertIn('rel="canonical" href="https://isaacfixesios.emp0ry.com/"', text)
         self.assertIn("72 × 64", text)
         self.assertIn("bottom-left", text)
         self.assertIn("1.7.9b.J754", text)
@@ -59,7 +59,7 @@ class WebsiteTests(unittest.TestCase):
         version = re.search(r"^Version: (.+)$", control, re.MULTILINE).group(1)
         info = plistlib.loads((ROOT / "livecontainer/Info.plist").read_bytes())
         self.assertEqual(info["CFBundleShortVersionString"], version)
-        self.assertTrue((DOCS / f"RELEASE_NOTES_v{version}.md").is_file())
+        self.assertIn(f"## {version}", (ROOT / "CHANGELOG.md").read_text())
         self.assertIn(f"v{version}", (DOCS / "index.html").read_text())
         workflows = list((ROOT / ".github/workflows").glob("*.yml"))
         self.assertEqual(len(workflows), 1)

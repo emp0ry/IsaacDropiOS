@@ -69,7 +69,7 @@ static void MacEvent(NSInteger code, NSInteger type, BOOL repeat, NSUInteger fla
 int main(int argc, char **argv) {
     (void)argv;
     @autoreleasepool {
-        __block int downs = 0, ups = 0, pauses = 0;
+        __block int downs = 0, ups = 0, pauses = 0, fullscreen = 0;
         __block BOOL allowed = YES;
         ISDRestartKey *restart = [[ISDRestartKey alloc] initWithHandler:^BOOL(BOOL down) {
             if (!down) { ups++; return YES; }
@@ -77,6 +77,9 @@ int main(int argc, char **argv) {
         } escapeHandler:^BOOL {
             if (!allowed) return NO;
             pauses++; return YES;
+        } fullscreenHandler:^BOOL {
+            if (!allowed) return NO;
+            fullscreen++; return YES;
         }];
         if (argc > 1) { [restart start]; InstallOtherShortcut(); }
         else { InstallOtherShortcut(); [restart start]; }
@@ -114,6 +117,15 @@ int main(int argc, char **argv) {
         MacEvent(53,11,NO,0);
         UIKitEvent(4,UIPressPhaseBegan,0); [app sendEvent:[UIEvent new]];
         assert(app.forwarded >= 6);
-        puts("Restart keyboard checks passed: UIKit, PlayCover, hook chaining, repeats, focus, modifiers, ignored holds");
+        MacEvent(3,10,NO,0); MacEvent(3,10,YES,0); assert(fullscreen == 1);
+        MacEvent(3,11,NO,0); MacEvent(3,10,NO,0); assert(fullscreen == 2);
+        MacEvent(3,11,NO,0);
+        MacEvent(3,10,NO,1UL<<20); MacEvent(3,10,YES,0); assert(fullscreen == 2);
+        MacEvent(3,11,NO,0);
+        allowed = NO; MacEvent(3,10,NO,0); allowed = YES;
+        MacEvent(3,10,YES,0); assert(fullscreen == 2); MacEvent(3,11,NO,0);
+        UIKitEvent(9,UIPressPhaseBegan,0); UIKitEvent(9,UIPressPhaseBegan,0);
+        assert(fullscreen == 3); UIKitEvent(9,UIPressPhaseEnded,0);
+        puts("Keyboard checks passed: R, Esc, F, UIKit, PlayCover, chaining, repeats, focus, modifiers, ignored holds");
     }
 }

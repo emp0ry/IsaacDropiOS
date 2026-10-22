@@ -51,9 +51,21 @@ Press Esc in an active run to pause, hold it to confirm it does not toggle again
 then release and press once to resume. Check the native pause animation, music,
 R-loop cancellation, and typing in Console/Steam fields without changing pause.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacDrop 0.1.3 ready`,
+Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.2.0 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
 `native fresh-run restart code validation passed`, and
 `native fresh-run restart queued; 1-second repeat while held`. With D Infinity
 equipped, look for `D Infinity touch switch <old> -> <new>`.
 Build/source checks and loading logs alone do not prove gameplay acceptance.
+
+## PlayCover Enter and fullscreen
+
+1. Fully restart after replacing the library. Load only the combined Isaac Fixes copy, not the old standalone Enter mod.
+2. Pause, select Continue, and press Enter: resume. Pause again, select Options, and press Enter: open Options instead of forcing a resume. Repeat with keypad Enter.
+3. Check Enter against physical Space with a charged active item in a disposable run. Hold both keys in each order and release them; input must not stick.
+4. Open Debug Console, type `help`, and press Enter. It must execute the command, not activate a game item. Check Steam text fields too.
+5. In a menu, run, and pause menu, press F to enter macOS fullscreen. Release and press F to leave. Holding F must not loop; extra presses during the animation must not queue toggles.
+6. Try F with a Russian keyboard layout, then Command/Control/Option/Shift+F and F in text fields. Only the unmodified physical F shortcut should toggle fullscreen in the game window.
+7. Confirm Drop, D Infinity, R, Esc, EID, Steam Sync, and Debug Console still work. The log should include `native Enter/Space alias installed` and `R, Escape and F input installed`.
+
+Host checks include fullscreen transition/failure handling and the actual native Enter adapter with a simulated pause selection. These are not a substitute for the in-game checks above.

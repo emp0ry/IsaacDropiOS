@@ -6,14 +6,14 @@ void ISDLog(NSString *format, ...) {
     va_list args; va_start(args,format);
     NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
     va_end(args);
-    NSLog(@"[IsaacDrop] %@",message);
+    NSLog(@"[IsaacFixes] %@",message);
     static NSString *path;
     if (!path) {
         NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:
-            @"Library/Application Support/IsaacDrop"];
+            @"Library/Application Support/IsaacFixes"];
         [NSFileManager.defaultManager createDirectoryAtPath:directory
             withIntermediateDirectories:YES attributes:nil error:nil];
-        path = [directory stringByAppendingPathComponent:@"drop.log"];
+        path = [directory stringByAppendingPathComponent:@"fixes.log"];
     }
     NSDictionary *attributes = [NSFileManager.defaultManager attributesOfItemAtPath:path error:nil];
     if ([attributes[NSFileSize] unsignedLongLongValue] > 128*1024)
@@ -22,7 +22,7 @@ void ISDLog(NSString *format, ...) {
         [NSFileManager.defaultManager createFileAtPath:path contents:nil attributes:nil];
     NSFileHandle *handle = [NSFileHandle fileHandleForWritingAtPath:path];
     [handle seekToEndOfFile];
-    [handle writeData:[[NSString stringWithFormat:@"%@ [IsaacDrop] %@\n",NSDate.date,message]
+    [handle writeData:[[NSString stringWithFormat:@"%@ [IsaacFixes] %@\n",NSDate.date,message]
         dataUsingEncoding:NSUTF8StringEncoding]];
     [handle closeFile];
 }

@@ -1,6 +1,9 @@
 #import "ISDNativeInput.h"
 #import "ISDHost.h"
 #import "ISDRestartKey.h"
+#import "ISDFullscreen.h"
+#import "IESKeyboard.h"
+#import "IESInputContext.h"
 #import <UIKit/UIKit.h>
 
 @interface ISDZone : UIControl
@@ -31,10 +34,8 @@
 @end
 
 static BOOL EditingText(UIView *view) {
-    if (view.isFirstResponder && ([view conformsToProtocol:@protocol(UIKeyInput)] ||
-        [view conformsToProtocol:@protocol(UITextInput)])) return YES;
-    for (UIView *child in view.subviews) if (EditingText(child)) return YES;
-    return NO;
+    return IESHasTextInput(view,NSClassFromString(@"AAPLOpenGLView"),
+        @protocol(UIKeyInput),@protocol(UITextInput));
 }
 
 @interface ISDController : NSObject
@@ -42,6 +43,8 @@ static BOOL EditingText(UIView *view) {
 @property(nonatomic, strong) ISDZone *zone;
 @property(nonatomic, strong) ISDZone *restartZone;
 @property(nonatomic, strong) ISDRestartKey *restartKey;
+@property(nonatomic, strong) IESKeyboard *enterKey;
+@property(nonatomic, strong) ISDFullscreen *fullscreen;
 @property(nonatomic, strong) NSTimer *timer;
 @property(nonatomic) BOOL loggedStartup;
 @end
@@ -105,12 +108,28 @@ static BOOL EditingText(UIView *view) {
     // reorder them: settings/console dialogs must keep their established input.
     if (!self.loggedStartup) {
         self.loggedStartup = YES;
-        ISDLog(@"IsaacDrop 0.1.3 ready; Drop, repeating Restart, Escape pause/resume");
+        ISDLog(@"IsaacFixes 0.2.0 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen");
     }
 }
-- (void)suspend { self.zone.hidden = YES; self.restartZone.hidden = YES; [self.input cancel]; }
+- (BOOL)keyboardAvailable {
+    UIWindow *window = ISDReadyWindow(NULL);
+    return window && !window.hidden && !window.rootViewController.presentedViewController && !EditingText(window);
+}
+- (void)suspend {
+    self.zone.hidden = YES; self.restartZone.hidden = YES;
+    [self.input cancel]; [self.enterKey suspend];
+}
 - (void)start {
     __weak ISDController *weakSelf = self;
+    self.fullscreen = [[ISDFullscreen alloc] initWithCanToggle:^BOOL {
+        ISDController *target = weakSelf;
+        UIWindow *window = ISDReadyWindow(NULL);
+        return target && window.isKeyWindow && [target keyboardAvailable];
+    }];
+    if (NSClassFromString(@"NSApplication")) {
+        self.enterKey = [[IESKeyboard alloc] initWithCanMap:^BOOL { return [weakSelf keyboardAvailable]; }];
+        ISDLog(@"native Enter/Space alias %@",[self.enterKey start] ? @"installed" : @"rejected");
+    }
     self.restartKey = [[ISDRestartKey alloc] initWithHandler:^BOOL(BOOL down) {
         ISDController *target = weakSelf;
         if (!down) { [target.input restartUp:2]; return YES; }
@@ -123,7 +142,7 @@ static BOOL EditingText(UIView *view) {
         if (!target || !window || window.hidden || window.rootViewController.presentedViewController ||
             EditingText(window)) return NO;
         return [target.input togglePause];
-    }];
+    } fullscreenHandler:^BOOL { return [weakSelf.fullscreen toggle]; }];
     [self.restartKey start];
     self.timer = [NSTimer timerWithTimeInterval:.05 target:self selector:@selector(tick) userInfo:nil repeats:YES];
     [NSRunLoop.mainRunLoop addTimer:self.timer forMode:NSRunLoopCommonModes];
@@ -131,6 +150,13 @@ static BOOL EditingText(UIView *view) {
         name:UIApplicationWillResignActiveNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(suspend)
         name:UIApplicationDidEnterBackgroundNotification object:nil];
+    if (self.enterKey) {
+        NSNotificationCenter *center = NSNotificationCenter.defaultCenter;
+        for (NSString *name in @[@"NSApplicationWillResignActiveNotification",@"NSWindowDidResignKeyNotification"])
+            [center addObserver:self.enterKey selector:@selector(suspend) name:name object:nil];
+        for (NSString *name in @[UITextFieldTextDidBeginEditingNotification,UITextViewTextDidBeginEditingNotification])
+            [center addObserver:self.enterKey selector:@selector(cancelMapping) name:name object:nil];
+    }
 }
 @end
 

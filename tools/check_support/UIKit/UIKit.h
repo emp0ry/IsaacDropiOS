@@ -12,7 +12,8 @@ typedef NS_OPTIONS(NSUInteger, UIKeyModifierFlags) {
 typedef NS_ENUM(NSInteger, UIApplicationState) {
     UIApplicationStateActive = 0, UIApplicationStateInactive = 1
 };
-enum { UIKeyboardHIDUsageKeyboardR = 0x15, UIKeyboardHIDUsageKeyboardEscape = 0x29 };
+enum { UIKeyboardHIDUsageKeyboardR = 0x15, UIKeyboardHIDUsageKeyboardEscape = 0x29,
+    UIKeyboardHIDUsageKeyboardF = 0x09 };
 extern NSString *const UIApplicationWillResignActiveNotification;
 @interface UIKey : NSObject
 @property(nonatomic) NSInteger keyCode;

@@ -34,7 +34,7 @@ dependencies and does not request JIT or writable executable memory.
 
 ## Website and documentation
 
-[isaacctrlios.emp0ry.com](https://isaacctrlios.emp0ry.com/) includes a touch-zone
+[isaacfixesios.emp0ry.com](https://isaacfixesios.emp0ry.com/) includes a touch-zone
 diagram, D Infinity sequence demonstration, downloads and installation steps.
 The site source lives in `docs/`, with a single build/release workflow for every
 distribution format.
@@ -55,5 +55,5 @@ This is not a full Ctrl/keyboard replacement: other short-press Ctrl behaviors
 are not yet fully supported. The mod does not directly edit save files. No game
 IPA, extracted game assets, accounts, credentials or user saves are distributed.
 
-Report reproducible problems on [GitHub](https://github.com/emp0ry/IsaacDropiOS/issues)
+Report reproducible problems on [GitHub](https://github.com/emp0ry/IsaacFixesiOS/issues)
 with the game version, loading method and steps to reproduce.

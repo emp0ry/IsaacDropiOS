@@ -42,7 +42,7 @@ if (cycleDemo && dieMode) {
 }
 
 // Static download links remain usable without JavaScript or GitHub API access.
-const repository = "emp0ry/IsaacDropiOS";
+const repository = "emp0ry/IsaacFixesiOS";
 const latest = `https://github.com/${repository}/releases/latest`;
 function releaseURL(value) {
   try {
