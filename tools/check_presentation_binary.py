@@ -29,7 +29,7 @@ def check(rva, expected):
 
 header = (Path(__file__).resolve().parents[1] / 'include/IsaacPresentationState.hpp').read_text()
 signatures = re.findall(r'\{(0x[0-9a-f]+),\{([^}]+)\}\}', header)
-assert len(signatures) == 10
+assert len(signatures) == 12
 for rva, words in signatures:
     check(int(rva, 16), tuple(int(word, 16) for word in words.split(',')))
 # Verify the Game renderer's object addresses as well as the callees. The

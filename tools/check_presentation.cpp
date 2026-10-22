@@ -35,6 +35,22 @@ int main() {
     s.fullscreenPlaying=1; assert(!s.RunVisible(true)); s.fullscreenPlaying=0;
     s.whiteFade=.1f; assert(!s.RunVisible(true)); s.whiteFade=0;
     s.whiteFade=-1; assert(s.RunVisible(true)); s.whiteFade=0;
+    s.transitionKind=0;
+    for (int phase=1;phase<=4;++phase) for (int direction=0;direction<4;++direction) {
+        s.roomTransition=phase; s.transitionDirection=direction;
+        assert(s.DoorSlide() && !s.RunVisible(false)); // Console mutation gate stays strict.
+        assert(s.RunVisible(false,true) && s.OverlayVisible());
+    }
+    for (int kind:{1,2,3,11,16,17,18,19,20}) {
+        s.transitionKind=kind; assert(!s.RunVisible(false,true) && !s.OverlayVisible());
+    }
+    s.transitionKind=0; s.transitionDirection=-1; assert(!s.RunVisible(false,true));
+    s.transitionDirection=0;
+    s.rewardScreen=2; assert(!s.RunVisible(false,true)); s.rewardScreen=0;
+    s.fullscreenPlaying=1; assert(!s.RunVisible(false,true)); s.fullscreenPlaying=0;
+    s.entryTimer=1; assert(!s.RunVisible(false,true)); s.entryTimer=0;
+    s.fadeState=2; assert(!s.RunVisible(false,true)); s.fadeState=0;
+    s.roomTransition=0;
     IsaacPresentation::Visibility visibility;
     assert(!visibility.Observe(s,true,false,false,1));
     assert(visibility.Observe(s,true,false,false,1.11));
@@ -42,7 +58,11 @@ int main() {
     s.rewardScreen=0; assert(!visibility.Observe(s,true,false,false,1.13));
     assert(!visibility.Observe(s,true,false,false,1.2));
     assert(visibility.Observe(s,true,false,false,1.24));
-    s.roomDescriptor++; assert(!visibility.Observe(s,true,false,false,1.25));
+    s.roomTransition=2; assert(visibility.Observe(s,true,false,false,1.25));
+    s.roomDescriptor++; assert(visibility.Observe(s,true,false,false,1.26));
+    s.roomTransition=3; assert(visibility.Observe(s,true,false,false,1.27));
+    s.roomTransition=0; assert(visibility.Observe(s,true,false,false,1.28));
+    s.seed++; assert(!visibility.Observe(s,true,false,false,1.29));
     assert(!visibility.Observe(s,false,false,false,1.5));
     assert(!visibility.Observe(s,true,false,false,1.51));
     assert(visibility.Observe(s,true,false,false,1.62));
@@ -59,14 +79,20 @@ int main() {
     memory.Set(game+0x25d44,uint32_t(123));
     memory.Set(game+0x10dfd8,int32_t(0)); memory.Set(game+0x10d45a,uint8_t(1));
     for (uintptr_t offset:{0x25810,0x25c00,0x27390,0x27630,0x47d04,0x25db0,0x1cf3d8,0x1cf3e8}) memory.Set(game+offset,int32_t(0));
+    memory.Set(game+0x25810+0x1c,int32_t(0)); memory.Set(game+0x25810+0x10,int32_t(0));
     memory.Set(game+0x1cf440,float(0)); memory.Set(game+0x1cf444,float(0));
     memory.Set(game+0x1cf708+0x38,uintptr_t(123)); memory.Set(game+0x1cf708+0x54,uint8_t(0));
     assert(IsaacPresentation::Capture(base,memory,s) && s.RunVisible(false));
+    memory.Set(game+0x25810,int32_t(2));
+    assert(IsaacPresentation::Capture(base,memory,s) && !s.RunVisible(false) && s.RunVisible(false,true));
+    memory.Set(game+0x25810+0x1c,int32_t(1));
+    assert(IsaacPresentation::Capture(base,memory,s) && !s.RunVisible(false,true));
+    memory.Set(game+0x25810,int32_t(0)); memory.Set(game+0x25810+0x1c,int32_t(0));
     memory.Set(game+0x1cf708+0x54,uint8_t(1));
     assert(IsaacPresentation::Capture(base,memory,s) && !s.RunVisible(true));
     memory.Set(game+0x1cf708+0x54,uint8_t(0));
     memory.Set(game+0x27390,int32_t(2));
     assert(IsaacPresentation::Capture(base,memory,s) && !s.RunVisible(true));
     memory.bytes.erase(game+0x27390); assert(!IsaacPresentation::Capture(base,memory,s));
-    std::cout<<"Presentation gate: playing/paused/menu, room/floor fades, boss/death/cinematics, invalid reads passed\n";
+    std::cout<<"Presentation gate passed: door slides stay visible, console mutation remains blocked, floor/boss/cinematics stay hidden, scene re-entry and invalid reads\n";
 }
