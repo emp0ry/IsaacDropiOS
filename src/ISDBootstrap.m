@@ -119,7 +119,7 @@ static BOOL EditingText(UIView *view) {
     // reorder them: settings/console dialogs must keep their established input.
     if (!self.loggedStartup) {
         self.loggedStartup = YES;
-        ISDLog(@"IsaacFixes 0.3.0 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD, Planetarium Chance");
+        ISDLog(@"IsaacFixes 0.3.1 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD, Planetarium Chance");
     }
 }
 - (BOOL)keyboardAvailable {

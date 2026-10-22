@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1
 
 - Hide Planetarium Chance and the display-density Mini HUD overlay during native floor transitions, fades, boss introductions, death screens and cinematics. Both remain hidden on pause.
 - Validate the supported executable's presentation-state signatures before reading these states. This is read-only and does not alter native scene rendering, RNG, saves or assets.

@@ -1,6 +1,6 @@
 Package: com.emp0ry.isaacdrop
 Name: Isaac Fixes
-Version: 0.3.0
+Version: 0.3.1
 Architecture: iphoneos-arm64
 Description: Native control fixes, sharper Mini HUD icons and Planetarium Chance for Isaac iOS and PlayCover.
 Maintainer: emp0ry
