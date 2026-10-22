@@ -95,6 +95,24 @@ class SourceTests(unittest.TestCase):
         self.assertIn("UIKeyboardHIDUsageKeyboardEscape", keys)
         self.assertIn("escapeHeld", keys)
 
+    def test_cursor_is_gameplay_only_and_local(self):
+        source = (ROOT / "src/ISDCursorAutoHide.m").read_text()
+        bootstrap = (ROOT / "src/ISDBootstrap.m").read_text()
+        self.assertIn("CursorIdleSeconds = 3.0", source)
+        self.assertIn("addLocalMonitorForEventsMatchingMask", source)
+        self.assertIn("window != self.window", source)
+        self.assertIn("return event;", source)
+        self.assertIn("if (!self.hiddenByUs) return", source)
+        self.assertIn("gameplay:available && window.isKeyWindow", bootstrap)
+        self.assertIn("!IESHasBlockingPanel(window)", bootstrap)
+        self.assertIn("[self.input cursorGameplayAvailable]", bootstrap)
+        self.assertIn("[self.cursorAutoHide suspend]", bootstrap)
+        context = (ROOT / "src/IESInputContext.m").read_text()
+        self.assertIn("readonly, getter=isHidden", context)
+        self.assertIn("respondsToSelector:required[i]", context)
+        for forbidden in ("addGlobalMonitor", "CGEventTap", "CGEventPost", "setAcceptsMouseMovedEvents", "#import <AppKit"):
+            self.assertNotIn(forbidden, source)
+
     def test_planetarium_native_read_only_floor_snapshot(self):
         source = (ROOT / "src/ISDPlanetarium.mm").read_text()
         self.assertIn("GetChance=0x6d03a4", source)

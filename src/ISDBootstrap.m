@@ -3,6 +3,7 @@
 #import "ISDRestartKey.h"
 #import "ISDConsoleCoordination.h"
 #import "ISDFullscreen.h"
+#import "ISDCursorAutoHide.h"
 #import "IESKeyboard.h"
 #import "IESInputContext.h"
 #import "ISDMiniHUD.h"
@@ -48,6 +49,7 @@ static BOOL EditingText(UIView *view) {
 @property(nonatomic, strong) ISDRestartKey *restartKey;
 @property(nonatomic, strong) IESKeyboard *enterKey;
 @property(nonatomic, strong) ISDFullscreen *fullscreen;
+@property(nonatomic, strong) ISDCursorAutoHide *cursorAutoHide;
 @property(nonatomic, strong) ISDMiniHUD *miniHUD;
 @property(nonatomic, strong) ISDPlanetarium *planetarium;
 @property(nonatomic, strong) NSTimer *timer;
@@ -58,6 +60,7 @@ static BOOL EditingText(UIView *view) {
     CADisplayLink *link = nil;
     UIWindow *window = ISDReadyWindow(&link);
     if (!window) {
+        [self.cursorAutoHide suspend];
         [self.miniHUD suspend];
         [self.planetarium suspend];
         self.zone.hidden = YES;
@@ -79,9 +82,9 @@ static BOOL EditingText(UIView *view) {
     if (!self.planetarium) self.planetarium = [ISDPlanetarium new];
     [self.planetarium tickWithWindow:window displayLink:link];
     if (!self.input) self.input = [ISDNativeInput new];
-    if (!self.input.supported) { self.zone.hidden = YES; self.restartZone.hidden = YES; return; }
+    if (!self.input.supported) { self.zone.hidden = YES; self.restartZone.hidden = YES; [self.cursorAutoHide suspend]; return; }
     if (![self.input installWithDisplayLink:link]) {
-        self.zone.hidden = YES; self.restartZone.hidden = YES; [self.input cancel]; return;
+        self.zone.hidden = YES; self.restartZone.hidden = YES; [self.input cancel]; [self.cursorAutoHide suspend]; return;
     }
     if (!self.zone) {
         self.zone = [[ISDZone alloc] initWithFrame:CGRectZero];
@@ -108,6 +111,9 @@ static BOOL EditingText(UIView *view) {
     self.zone.hidden = !available;
     self.zone.userInteractionEnabled = available;
     [self.input setAvailable:available];
+    if (self.cursorAutoHide)
+        [self.cursorAutoHide tickWithHost:window gameplay:available && window.isKeyWindow &&
+            [self.input cursorGameplayAvailable] && !EditingText(window) && !IESHasBlockingPanel(window)];
     BOOL restartAvailable = UIApplication.sharedApplication.applicationState == UIApplicationStateActive &&
         !window.rootViewController.presentedViewController && !EditingText(window) &&
         ([self.input restartAvailable] ||
@@ -119,7 +125,7 @@ static BOOL EditingText(UIView *view) {
     // reorder them: settings/console dialogs must keep their established input.
     if (!self.loggedStartup) {
         self.loggedStartup = YES;
-        ISDLog(@"IsaacFixes 0.3.2 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD, Planetarium Chance");
+        ISDLog(@"IsaacFixes 0.3.3 ready; Drop, R restart, Esc pause, Enter/Space, F fullscreen, Mini HUD, Planetarium Chance, cursor auto-hide");
     }
 }
 - (BOOL)keyboardAvailable {
@@ -127,6 +133,7 @@ static BOOL EditingText(UIView *view) {
     return window && !window.hidden && !window.rootViewController.presentedViewController && !EditingText(window);
 }
 - (void)suspend {
+    [self.cursorAutoHide suspend];
     [self.miniHUD suspend];
     [self.planetarium suspend];
     self.zone.hidden = YES; self.restartZone.hidden = YES;
@@ -140,6 +147,8 @@ static BOOL EditingText(UIView *view) {
         return target && window.isKeyWindow && [target keyboardAvailable];
     }];
     if (NSClassFromString(@"NSApplication")) {
+        self.cursorAutoHide = [ISDCursorAutoHide new];
+        ISDLog(@"PlayCover cursor auto-hide %@ (3 seconds idle)",self.cursorAutoHide.installed ? @"installed" : @"unavailable");
         self.enterKey = [[IESKeyboard alloc] initWithCanMap:^BOOL { return [weakSelf keyboardAvailable]; }];
         ISDLog(@"native Enter/Space alias %@",[self.enterKey start] ? @"installed" : @"rejected");
     }

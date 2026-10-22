@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.3
+
+- Add PlayCover cursor auto-hide after 3 seconds without mouse activity during an unpaused run. Movement or clicks reveal it. Menus, pause, mod panels, native dialogs, window changes and focus loss restore the cursor.
+- Use the existing low-frequency tick and an app-local mouse observer, with balanced cursor hide/unhide ownership. No global input monitoring, AppKit link in iPhone builds, save changes or game-input interception. Host checks cover idle timing, mouse activity, pause/panels, focus, window bounds, fullscreen and cursor ownership. The user accepted the current PlayCover build.
+- Fix the run-entry crash in the new panel visibility check: use UIView's real `isHidden` getter and keep the cursor visible for unknown host views. The regression fixture now uses UIKit's getter names and reproduces the earlier exception before the fix.
+
 ## 0.3.2
 
 - Fix D Infinity repeatedly switching while physical Ctrl is held. Only its native short-Drop check becomes one switch per press; release and press again for the next die. The separate hold-to-drop check, other controls and the invisible touch zone keep their existing behavior.

@@ -67,7 +67,7 @@ Press Esc in an active run to pause, hold it to confirm it does not toggle again
 then release and press once to resume. Check the native pause animation, music,
 R-loop cancellation, and typing in Console/Steam fields without changing pause.
 
-Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.3.2 ready`,
+Log checkpoints: `native Drop instance adapter installed`, `IsaacFixes 0.3.3 ready`,
 `live player vector validated`, `D Infinity touch-switch code validation passed`,
 `native fresh-run restart code validation passed`, and
 `native fresh-run restart queued; 1-second repeat while held`. With D Infinity
@@ -85,6 +85,13 @@ Build/source checks and loading logs alone do not prove gameplay acceptance.
 7. Confirm Drop, D Infinity, R, Esc, EID, Steam Sync, and Debug Console still work. The log should include `native Enter/Space alias installed` and `R, Escape and F input installed`.
 
 Host checks include fullscreen transition/failure handling and the actual native Enter adapter with a simulated pause selection. These are not a substitute for the in-game checks above.
+
+## PlayCover cursor auto-hide
+
+1. During an unpaused run, leave the mouse inside the game content without moving or clicking. After 3 seconds the cursor should disappear, including while playing with the keyboard. Move or click: it should return immediately.
+2. Pause with Esc or the game's button, open Options, EID settings/items, Console and Steam dialogs. Leave the pointer still for more than 3 seconds: it must remain visible. Resume: start a new 3-second idle interval.
+3. Move to the title bar or outside the window, switch apps, minimize and restore, and enter/leave fullscreen with F. The cursor must remain usable outside the game and restart its idle delay on return.
+4. Hold a mouse button or drag a control: it must not hide during the drag. Close/reopen the run and test another app window gaining focus. Existing mouse events, Ctrl, R, Esc, Enter and F must remain unchanged. Physical iPhone pointer behavior is intentionally unchanged.
 
 ## Extra HUD: Mini quality
 

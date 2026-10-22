@@ -468,6 +468,14 @@ static bool Install(uintptr_t image, const std::vector<Segment>& segments, uintp
 - (BOOL)gameplayAvailable {
     return [self liveRunAvailableAllowPause:NO];
 }
+- (BOOL)cursorGameplayAvailable {
+    if (![self gameplayAvailable]) return NO;
+    uintptr_t manager = 0; uint32_t mode = 0;
+    // A live allocation can survive on the menu briefly. Require the native
+    // in-run manager mode as well as an unpaused live player, not HUD visibility.
+    return Read(reinterpret_cast<uintptr_t>(_header)+ManagerGlobal,&manager,8) && manager &&
+        Read(manager+0x204c0,&mode,4) && mode == 2;
+}
 - (BOOL)liveRunAvailableAllowPause:(BOOL)allowPaused {
     if (!_installed || !NSThread.isMainThread) return NO;
     uintptr_t game = 0, room = 0; int32_t pause = -1; uint32_t seed = 0;

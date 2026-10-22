@@ -22,6 +22,8 @@ Restart follows the game's normal character, difficulty, seed, and Eden-token ru
 
 Enter on **Continue** resumes; Enter on **Options** opens Options. It is not a forced pause toggle or a direct active-item call. The physical Space key still works. F uses macOS's native fullscreen transition and returns to windowed mode when pressed again.
 
+In PlayCover, the mouse cursor hides after **3 seconds** without mouse activity during an unpaused run. Move or click to show it again. It stays visible in menus, on pause, over open mod panels, outside the game content and while another window/app is focused. No global mouse monitoring or extra system permissions are used.
+
 Normal text fields, Debug Console input, dialogs, and modified keyboard shortcuts are left alone. D Infinity cycling and hold-to-drop are supported; other short-press Ctrl behaviors are not yet fully supported by the iOS touch path.
 
 ## Sharper Mini HUD

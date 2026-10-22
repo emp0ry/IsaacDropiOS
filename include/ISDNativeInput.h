@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) BOOL installed;
 - (BOOL)installWithDisplayLink:(CADisplayLink *)link;
 - (BOOL)gameplayAvailable;
+- (BOOL)cursorGameplayAvailable;
 - (void)setAvailable:(BOOL)available;
 - (void)press;
 - (void)releasePress;

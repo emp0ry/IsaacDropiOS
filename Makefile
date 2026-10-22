@@ -6,7 +6,7 @@ CLANG := $(shell xcrun --sdk iphoneos --find clang++)
 MIN_IOS ?= 15.0
 DYLIB := $(ROOT)/build/IsaacFixes.dylib
 PLAYCOVER_DYLIB := $(ROOT)/build/IsaacFixes-PlayCover.dylib
-SOURCES := src/ISDBootstrap.m src/ISDHost.mm src/ISDNativeInput.mm src/ISDRestartKey.m src/ISDFullscreen.m src/IESKeyboard.m src/IESInputContext.m src/ISDMiniHUD.mm src/ISDPlanetarium.mm
+SOURCES := src/ISDBootstrap.m src/ISDHost.mm src/ISDNativeInput.mm src/ISDRestartKey.m src/ISDFullscreen.m src/ISDCursorAutoHide.m src/IESKeyboard.m src/IESInputContext.m src/ISDMiniHUD.mm src/ISDPlanetarium.mm
 STAGE := $(ROOT)/build/fixes-deb-stage
 FRAMEWORK := $(ROOT)/build/IsaacFixes.framework
 
@@ -47,6 +47,9 @@ test:
 	xcrun --sdk macosx clang -isysroot "$(MACSDK)" -fobjc-arc -fblocks -Wall -Wextra -Werror \
 		-Iinclude src/ISDFullscreen.m tools/check_fullscreen.m -framework Foundation -o build/check_fullscreen
 	build/check_fullscreen
+	xcrun --sdk macosx clang -isysroot "$(MACSDK)" -fobjc-arc -fblocks -Wall -Wextra -Werror \
+		-Iinclude src/ISDCursorAutoHide.m src/IESInputContext.m tools/check_cursor_autohide.m -framework Foundation -framework CoreGraphics -o build/check_cursor_autohide
+	build/check_cursor_autohide
 	node --check docs/script.js
 	plutil -lint livecontainer/Info.plist package/IsaacFixes.plist
 
