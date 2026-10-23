@@ -87,6 +87,8 @@ Downloads and checksums are generated in `dist/`. Host checks cover Drop, restar
 
 ## Website and releases
 
-The [product website source](website/README.md) lives in `website/`. Its Vite production build is synchronized to `docs/`, served from `main:/docs` through GitHub Pages. Its custom domain is `isaacfixesios.emp0ry.com`; DNS is managed separately. Tagging the version from `package/control` builds the packages and publishes the matching section of [CHANGELOG.md](CHANGELOG.md), without repeating the release title in its body.
+The [product website](https://isaacfixesios.emp0ry.com/) is also available at [emp0ry.com/IsaacFixesiOS/](https://emp0ry.com/IsaacFixesiOS/). Website sources and publication are maintained in the private emp0ry.com project. Completed application releases notify its central static build; this repository contains the application and its technical documentation.
+
+Tagging the version from `package/control` builds the packages and publishes the matching section of [CHANGELOG.md](CHANGELOG.md), without repeating the release title in its body.
 
 Independent, unofficial software by emp0ry. Not affiliated with Nicalis. MIT license.

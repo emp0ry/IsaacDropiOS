@@ -50,7 +50,6 @@ test:
 	xcrun --sdk macosx clang -isysroot "$(MACSDK)" -fobjc-arc -fblocks -Wall -Wextra -Werror \
 		-Iinclude src/ISDCursorAutoHide.m src/IESInputContext.m tools/check_cursor_autohide.m -framework Foundation -framework CoreGraphics -o build/check_cursor_autohide
 	build/check_cursor_autohide
-	node --check docs/script.js
 	plutil -lint livecontainer/Info.plist package/IsaacFixes.plist
 
 package: dylib
