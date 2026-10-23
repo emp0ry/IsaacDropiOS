@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://isaacfixesios.emp0ry.com/sitemap.xml

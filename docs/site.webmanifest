@@ -1,0 +1,16 @@
+{
+  "name": "Isaac Fixes",
+  "short_name": "Isaac Fixes",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#09090d",
+  "theme_color": "#09090d",
+  "icons": [
+    {
+      "src": "/site/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "commit": "6f3e664abada98eb81240df3a6fcec7d62bb8d51",
+  "retained": {
+    "styles.css": "c1ded1a1950790e035b8a39bafba9b74e3060a490dce3230cb8d6a6d69f4c0e3",
+    "RELEASE_NOTES_v0.1.1.md": "3a0f1dae3d60d83078fe64fe43ef76c29376b0d1dd6ead616e1ffa90529e1586",
+    "CNAME": "afa64f0a5e446bd440c4455fa170b519f681dabb2dad9552e4792ebe99efcfe2",
+    "TESTING.md": "36067a62fdd2cc4b5b06795ed9d756e7e65fb88f2d730a2ab30b55267729d34a",
+    "script.js": "01da170d9cef15648627177ca3797983f9703f5997ec17b20faa5710bfad2cbd",
+    ".nojekyll": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "sitemap.xml": "689cc9c51afb4a591841485791c2170c0442a6c05ad36f32bc54c4b3a069c3b8",
+    "robots.txt": "907e2294aeccebe3f5875b84ae4c3f85a6d809810a6e01485c3da2faabd8c402",
+    "RELEASE_NOTES_v0.1.2.md": "b5edbe873ddf24182092f33e2a47a84ad64772441c3148164196418c8fe2c463",
+    "RELEASE_NOTES_v0.1.3.md": "d9a4d6c439f0ad58d59bd73531f97a79b2ea016862bf58ec8ef2fd1938db55fd",
+    "favicon.svg": "dec9f8183a518fb7e34a4b0bba4e3f41ef278ed6fb28c9c468010ab5cdc447aa"
+  }
+}

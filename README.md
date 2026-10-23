@@ -87,6 +87,6 @@ Downloads and checksums are generated in `dist/`. Host checks cover Drop, restar
 
 ## Website and releases
 
-`docs/` is a buildless HTML/CSS/JavaScript site served from `main:/docs` through GitHub Pages. Its custom domain is `isaacfixesios.emp0ry.com`; DNS is managed separately. Tagging the version from `package/control` builds the packages and publishes the matching section of [CHANGELOG.md](CHANGELOG.md), without repeating the release title in its body.
+The [product website source](website/README.md) lives in `website/`. Its Vite production build is synchronized to `docs/`, served from `main:/docs` through GitHub Pages. Its custom domain is `isaacfixesios.emp0ry.com`; DNS is managed separately. Tagging the version from `package/control` builds the packages and publishes the matching section of [CHANGELOG.md](CHANGELOG.md), without repeating the release title in its body.
 
 Independent, unofficial software by emp0ry. Not affiliated with Nicalis. MIT license.
